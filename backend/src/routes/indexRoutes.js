@@ -3,6 +3,7 @@ const router = express.Router();
 
 const authRoutes = require("./authRoutes");
 const expenseRoutes = require("./expenseRoutes");
+const budgetRoutes = require("./budgetRoutes");
 
 // Health route
 router.get('/health', (req, res) => {
@@ -15,6 +16,9 @@ router.get('/health', (req, res) => {
 
 // Auth routes
 router.use("/auth", authRoutes);
+
+//Budget routes
+router.use("/budgets", budgetRoutes);
 
 // Expense routes
 router.use("/expenses", expenseRoutes);
