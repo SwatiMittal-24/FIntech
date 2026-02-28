@@ -4,6 +4,8 @@ const router = express.Router();
 const authRoutes = require("./authRoutes");
 const expenseRoutes = require("./expenseRoutes");
 const budgetRoutes = require("./budgetRoutes");
+const bankRoutes = require("./bankRoutes");
+
 
 // Health route
 router.get('/health', (req, res) => {
@@ -22,5 +24,8 @@ router.use("/budgets", budgetRoutes);
 
 // Expense routes
 router.use("/expenses", expenseRoutes);
+
+//Bank routes
+router.use("/accounts", bankRoutes);
 
 module.exports = router;

@@ -17,6 +17,8 @@ model User {
   // Relation
   expenses  Expense[]
   budgets   Budget[]
+  bankAccounts BankAccount[]
+  creditCards CreditCard[]
 }
 
 model Expense {
@@ -40,4 +42,44 @@ model Budget {
   userId    Int
   user      User     @relation(fields: [userId], references: [id])
   createdAt DateTime @default(now())
+}
+
+model BankAccount {
+  id        Int      @id @default(autoincrement())
+  name      String
+  balance   Float    @default(0)
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  transactions Transaction[]
+  createdAt DateTime @default(now())
+}
+
+model Transaction {
+  id            Int      @id @default(autoincrement())
+  type          String   // "CREDIT" or "DEBIT"
+  amount        Float
+  bankAccountId Int
+  bankAccount   BankAccount @relation(fields: [bankAccountId], references: [id])
+  createdAt     DateTime @default(now())
+}
+
+model CreditCard {
+  id          Int      @id @default(autoincrement())
+  name        String
+  limit       Float
+  outstanding Float    @default(0)
+  dueDate     String
+  userId      Int
+  user        User     @relation(fields: [userId], references: [id])
+  transactions CardTransaction[]
+  createdAt   DateTime @default(now())
+}
+
+model CardTransaction {
+  id           Int      @id @default(autoincrement())
+  type         String   // SPEND or PAYMENT
+  amount       Float
+  creditCardId Int
+  creditCard   CreditCard @relation(fields: [creditCardId], references: [id])
+  createdAt    DateTime @default(now())
 }
