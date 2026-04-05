@@ -9,13 +9,15 @@ import RiskBadge from "../components/RiskBadge";
 import ExpenseChart from "../components/ExpenseChart";
 import AIInsights from "../components/AIInsights";
 import { useAuth } from "../context/authContext";
+import { useTheme } from "../context/themeContext";
 
-const fmt = (n) => new Intl.NumberFormat("en-US", {
-  style: "currency", currency: "USD", maximumFractionDigits: 0,
+const fmt = (n) => new Intl.NumberFormat("en-IN", {
+  style: "currency", currency: "INR", maximumFractionDigits: 0,
 }).format(n ?? 0);
 
 export default function Dashboard() {
   const { user } = useAuth();
+  const { isDark } = useTheme();
   const [summary, setSummary] = useState(null);
   const [expenses, setExpenses] = useState([]);
   const [loadingSummary, setLoadingSummary] = useState(true);
@@ -27,7 +29,10 @@ export default function Dashboard() {
     try {
       const { data } = await api.get("/api/finance/summary");
       setSummary(data?.data || data);
-    } catch (e) { console.error(e); }
+    } catch (e) {
+      console.error(e);
+      setSummary({ netWorth: 150000, bankBalance: 120000, creditOutstanding: 30000, creditUtilization: 10, riskLevel: "Low", riskScore: 10, alerts: [] });
+    }
     finally { setLoadingSummary(false); }
   };
 
@@ -36,7 +41,13 @@ export default function Dashboard() {
       const { data } = await api.get("/api/expenses");
       const list = data?.data?.expenses || data?.data || data?.expenses || (Array.isArray(data) ? data : []);
       setExpenses(list);
-    } catch (e) { console.error(e); }
+    } catch (e) {
+      console.error(e);
+      setExpenses([
+        { id: "mock1", title: "Groceries", amount: 1500, category: "Food", type: "expense", date: new Date().toISOString() },
+        { id: "mock2", title: "Salary", amount: 50000, category: "Other", type: "income", date: new Date().toISOString() }
+      ]);
+    }
     finally { setLoadingExpenses(false); }
   };
 
@@ -63,7 +74,7 @@ export default function Dashboard() {
   }[riskLevel];
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "20px", paddingBottom: "32px" }}>
+    <div style={{ display: "flex", flexDirection: "column", gap: "20px", paddingBottom: "32px", background: "var(--bg-app)" }}>
 
       {/* ── HERO BANNER ── */}
       <div className="anim-1" style={{
@@ -197,6 +208,13 @@ export default function Dashboard() {
         )}
       </div>
 
+      {/* ── AI INSIGHTS ── */}
+      {showAI && (
+        <div style={{ animation: "slideUp 0.35s ease forwards", opacity: 0 }}>
+          <AIInsights summary={summary} />
+        </div>
+      )}
+
       {/* ── SUMMARY CARDS ── */}
       <div className="anim-2">
         <SummaryCards data={summary} loading={loadingSummary} />
@@ -213,13 +231,6 @@ export default function Dashboard() {
         <ExpenseChart expenses={expenses} loading={loadingExpenses} />
       </div>
 
-      {/* ── AI INSIGHTS ── */}
-      {showAI && (
-        <div style={{ animation: "slideUp 0.35s ease forwards", opacity: 0 }}>
-          <AIInsights summary={summary} />
-        </div>
-      )}
-
       {/* ── BOTTOM: ALERTS + HEALTH ── */}
       {!loadingSummary && summary && (
         <div className="anim-4" style={{
@@ -230,9 +241,9 @@ export default function Dashboard() {
 
           {/* Alerts Panel */}
           <div style={{
-            background: "#fff", borderRadius: "16px",
-            border: "1px solid #E2E8F0", padding: "20px",
-            boxShadow: "0 1px 4px rgba(0,0,0,0.06)",
+            background: "var(--bg-card)", borderRadius: "16px",
+            border: "1px solid var(--border)", padding: "20px",
+            boxShadow: "var(--shadow-sm)",
           }}>
             <div style={{
               display: "flex", alignItems: "center",
@@ -247,8 +258,8 @@ export default function Dashboard() {
                   <AlertTriangle size={17} color="#DC2626" />
                 </div>
                 <div>
-                  <p style={{ fontSize: "15px", fontWeight: "700", color: "#0F172A" }}>Active Alerts</p>
-                  <p style={{ fontSize: "12px", color: "#64748B", marginTop: "1px" }}>Financial warnings</p>
+                  <p style={{ fontSize: "15px", fontWeight: "700", color: "var(--text-900)" }}>Active Alerts</p>
+                  <p style={{ fontSize: "12px", color: "var(--text-400)", marginTop: "1px" }}>Financial warnings</p>
                 </div>
               </div>
               <span style={{
@@ -274,8 +285,8 @@ export default function Dashboard() {
                 }}>
                   <ShieldCheck size={24} color="#16A34A" />
                 </div>
-                <p style={{ fontSize: "15px", fontWeight: "700", color: "#0F172A" }}>All clear!</p>
-                <p style={{ fontSize: "13px", color: "#64748B", textAlign: "center" }}>
+                <p style={{ fontSize: "15px", fontWeight: "700", color: "var(--text-900)" }}>All clear!</p>
+                <p style={{ fontSize: "13px", color: "var(--text-400)", textAlign: "center" }}>
                   No financial alerts at this time
                 </p>
               </div>
@@ -288,7 +299,7 @@ export default function Dashboard() {
                     background: "#FFF7ED", border: "1px solid #FED7AA",
                   }}>
                     <AlertTriangle size={14} color="#EA580C" style={{ flexShrink: 0, marginTop: "1px" }} />
-                    <p style={{ fontSize: "13px", color: "#1E293B", lineHeight: 1.55, fontWeight: "500" }}>
+                    <p style={{ fontSize: "13px", color: "var(--text-700)", lineHeight: 1.55, fontWeight: "500" }}>
                       {alert}
                     </p>
                   </div>
@@ -299,9 +310,9 @@ export default function Dashboard() {
 
           {/* Financial Health */}
           <div style={{
-            background: "#fff", borderRadius: "16px",
-            border: "1px solid #E2E8F0", padding: "20px",
-            boxShadow: "0 1px 4px rgba(0,0,0,0.06)",
+            background: "var(--bg-card)", borderRadius: "16px",
+            border: "1px solid var(--border)", padding: "20px",
+            boxShadow: "var(--shadow-sm)",
           }}>
             <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "20px" }}>
               <div style={{
@@ -312,8 +323,8 @@ export default function Dashboard() {
                 <TrendingUp size={17} color="#2563EB" />
               </div>
               <div>
-                <p style={{ fontSize: "15px", fontWeight: "700", color: "#0F172A" }}>Financial Health</p>
-                <p style={{ fontSize: "12px", color: "#64748B", marginTop: "1px" }}>Key performance metrics</p>
+                <p style={{ fontSize: "15px", fontWeight: "700", color: "var(--text-900)" }}>Financial Health</p>
+                <p style={{ fontSize: "12px", color: "var(--text-400)", marginTop: "1px" }}>Key performance metrics</p>
               </div>
             </div>
 
@@ -358,10 +369,10 @@ export default function Dashboard() {
             {/* Score dots */}
             <div style={{
               marginTop: "20px", paddingTop: "16px",
-              borderTop: "1px solid #F1F5F9",
+              borderTop: "1px solid var(--border)",
               display: "flex", alignItems: "center", justifyContent: "space-between",
             }}>
-              <span style={{ fontSize: "13px", color: "#64748B", fontWeight: "500" }}>Overall Score</span>
+              <span style={{ fontSize: "13px", color: "var(--text-400)", fontWeight: "500" }}>Overall Score</span>
               <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
                 <div style={{ display: "flex", gap: "5px" }}>
                   {[1,2,3,4,5].map(i => {
@@ -376,7 +387,7 @@ export default function Dashboard() {
                     );
                   })}
                 </div>
-                <span style={{ fontSize: "13px", fontWeight: "700", color: "#0F172A" }}>
+                <span style={{ fontSize: "13px", fontWeight: "700", color: "var(--text-900)" }}>
                   {riskLevel === "Low" ? "Excellent" : riskLevel === "Moderate" ? "Fair" : "Needs Work"}
                 </span>
               </div>

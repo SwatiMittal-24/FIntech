@@ -59,7 +59,7 @@ export default function Sidebar({ collapsed, onToggle }) {
               Finance<span style={{ color: "#60A5FA" }}>AI</span>
             </div>
             <div style={{
-              fontSize: "10px", fontWeight: "600", color: "#475569",
+              fontSize: "10px", fontWeight: "600", color: "var(--text-500)",
               letterSpacing: "0.08em", textTransform: "uppercase",
             }}>
               Smart Finance
@@ -196,7 +196,7 @@ export default function Sidebar({ collapsed, onToggle }) {
                 {user.name || "User"}
               </div>
               <div style={{
-                fontSize: "11px", color: "#475569",
+                fontSize: "11px", color: "var(--text-500)",
                 whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
               }}>
                 {user.email}
@@ -211,7 +211,7 @@ export default function Sidebar({ collapsed, onToggle }) {
             display: "flex", alignItems: "center", gap: "10px",
             width: "100%", padding: "10px", borderRadius: "10px",
             background: "transparent", border: "none",
-            color: "#64748B", cursor: "pointer",
+            color: "var(--text-400)", cursor: "pointer",
             transition: "all 0.15s ease",
             fontSize: "14px", fontWeight: "500",
           }}

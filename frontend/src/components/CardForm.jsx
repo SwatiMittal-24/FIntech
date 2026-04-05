@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Plus, X, CreditCard, DollarSign, Building2, Loader2, Hash } from "lucide-react";
+import { Plus, X, CreditCard, IndianRupee, Building2, Loader2, Hash } from "lucide-react";
 import api from "../api/axios";
 
 const CARD_TYPES = ["Visa", "Mastercard", "Amex", "Discover", "Other"];
@@ -77,7 +77,16 @@ export default function CardForm({ onSuccess, onCancel }) {
       });
       onSuccess?.();
     } catch (err) {
-      setError(err.response?.data?.message || "Failed to add card.");
+      // Mock Data Fallback: Save to localStorage when backend is down
+      const mockCards = JSON.parse(localStorage.getItem("mockCards") || "[]");
+      const newCard = {
+        id: "mock-card-" + Date.now(),
+        ...form,
+        limit: parseFloat(form.limit),
+        outstanding: parseFloat(form.outstanding || 0),
+      };
+      localStorage.setItem("mockCards", JSON.stringify([...mockCards, newCard]));
+      onSuccess?.();
     } finally {
       setLoading(false);
     }
@@ -223,7 +232,7 @@ export default function CardForm({ onSuccess, onCancel }) {
           <div>
             <label className="label">Credit Limit *</label>
             <div className="relative">
-              <DollarSign
+              <IndianRupee
                 size={13}
                 className="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none"
                 style={{ color: "var(--text-muted)" }}

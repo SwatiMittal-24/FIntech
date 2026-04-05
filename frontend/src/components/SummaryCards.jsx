@@ -1,18 +1,21 @@
 import {
   TrendingUp, Wallet, CreditCard, Activity,
 } from "lucide-react";
+import { useTheme } from "../context/themeContext";
 
-const fmt = (n) => new Intl.NumberFormat("en-US", {
-  style: "currency", currency: "USD", maximumFractionDigits: 0,
+const fmt = (n) => new Intl.NumberFormat("en-IN", {
+  style: "currency", currency: "INR", maximumFractionDigits: 0,
 }).format(n ?? 0);
 const pct = (n) => `${(Number(n) || 0).toFixed(1)}%`;
 
-function SkeletonCard() {
+function SkeletonCard({ isDark }) {
   return (
     <div style={{
-      background: "#fff", borderRadius: "16px",
-      border: "1px solid #E2E8F0", padding: "24px",
-      boxShadow: "0 1px 4px rgba(0,0,0,0.06)",
+      background: "var(--bg-card)",
+      borderRadius: "16px",
+      border: "1px solid var(--border)",
+      padding: "24px",
+      boxShadow: "var(--shadow-sm)",
     }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "20px" }}>
         <div>
@@ -29,10 +32,10 @@ function SkeletonCard() {
 
 const getCards = (d) => {
   const util = Number(d.creditUtilization) || 0;
-  const utilColor  = util > 70 ? "#DC2626" : util > 40 ? "#D97706" : "#16A34A";
-  const utilBg     = util > 70 ? "#FEF2F2" : util > 40 ? "#FFFBEB" : "#F0FDF4";
+  const utilColor = util > 70 ? "#DC2626" : util > 40 ? "#D97706" : "#16A34A";
+  const utilBg = util > 70 ? "#FEF2F2" : util > 40 ? "#FFFBEB" : "#F0FDF4";
   const utilBorder = util > 70 ? "#FECACA" : util > 40 ? "#FDE68A" : "#BBF7D0";
-  const utilLabel  = util > 70 ? "High Risk" : util > 40 ? "Moderate" : "Healthy";
+  const utilLabel = util > 70 ? "High Risk" : util > 40 ? "Moderate" : "Healthy";
 
   return [
     {
@@ -100,11 +103,17 @@ const getCards = (d) => {
 };
 
 export default function SummaryCards({ data, loading }) {
-  if (loading) return (
-    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(210px, 1fr))", gap: "16px" }}>
-      {[1,2,3,4].map(i => <SkeletonCard key={i} />)}
-    </div>
-  );
+  const { isDark } = useTheme();
+
+  if (loading) {
+    return (
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(210px, 1fr))", gap: "16px" }}>
+        {[1, 2, 3, 4].map((i) => (
+          <SkeletonCard key={i} isDark={isDark} />
+        ))}
+      </div>
+    );
+  }
 
   return (
     <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(210px, 1fr))", gap: "16px" }}>
@@ -114,11 +123,11 @@ export default function SummaryCards({ data, loading }) {
           <div
             key={card.label}
             style={{
-              background: "#FFFFFF",
+              background: "var(--bg-card)",
               borderRadius: "16px",
-              border: `1px solid #E2E8F0`,
+              border: "1px solid var(--border)",
               padding: "22px",
-              boxShadow: "0 1px 4px rgba(0,0,0,0.06)",
+              boxShadow: "var(--shadow-sm)",
               cursor: "default",
               transition: "all 0.22s ease",
               animation: `slideUp 0.4s ease ${i * 0.08}s forwards`,
@@ -126,32 +135,31 @@ export default function SummaryCards({ data, loading }) {
               position: "relative",
               overflow: "hidden",
             }}
-            onMouseEnter={e => {
+            onMouseEnter={(e) => {
               e.currentTarget.style.transform = "translateY(-4px)";
-              e.currentTarget.style.boxShadow = `0 12px 28px rgba(0,0,0,0.11)`;
+              e.currentTarget.style.boxShadow = "var(--shadow-lg)";
               e.currentTarget.style.borderColor = card.iconBorder;
             }}
-            onMouseLeave={e => {
+            onMouseLeave={(e) => {
               e.currentTarget.style.transform = "translateY(0)";
-              e.currentTarget.style.boxShadow = "0 1px 4px rgba(0,0,0,0.06)";
-              e.currentTarget.style.borderColor = "#E2E8F0";
+              e.currentTarget.style.boxShadow = "var(--shadow-sm)";
+              e.currentTarget.style.borderColor = "var(--border)";
             }}
           >
-            {/* Top accent line */}
             <div style={{
               position: "absolute", top: 0, left: 0, right: 0,
               height: "3px", background: card.accent,
               borderRadius: "16px 16px 0 0",
             }} />
 
-            {/* Header: label + icon */}
             <div style={{
               display: "flex", justifyContent: "space-between",
               alignItems: "flex-start", marginBottom: "16px",
             }}>
               <span style={{
                 fontSize: "11px", fontWeight: "700",
-                color: "#64748B", letterSpacing: "0.07em",
+                color: "var(--text-400)",
+                letterSpacing: "0.07em",
                 textTransform: "uppercase", marginTop: "2px",
               }}>
                 {card.label}
@@ -168,12 +176,11 @@ export default function SummaryCards({ data, loading }) {
               </div>
             </div>
 
-            {/* Value */}
             <div style={{
               fontFamily: "JetBrains Mono, monospace",
               fontSize: "clamp(22px, 2.5vw, 28px)",
               fontWeight: "700",
-              color: "#0F172A",
+              color: "var(--text-900)",
               letterSpacing: "-0.02em",
               marginBottom: "14px",
               lineHeight: 1.1,
@@ -181,10 +188,9 @@ export default function SummaryCards({ data, loading }) {
               {card.value}
             </div>
 
-            {/* Progress bar */}
             <div style={{
               height: "5px", borderRadius: "99px",
-              background: "#F1F5F9",
+              background: "var(--bg-muted)",
               marginBottom: "14px", overflow: "hidden",
             }}>
               <div style={{
@@ -195,7 +201,6 @@ export default function SummaryCards({ data, loading }) {
               }} />
             </div>
 
-            {/* Badge + sub text */}
             <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
               <span style={{
                 padding: "4px 10px", borderRadius: "8px",
@@ -208,7 +213,9 @@ export default function SummaryCards({ data, loading }) {
                 {card.badgeText}
               </span>
               <span style={{
-                fontSize: "12px", color: "#94A3B8", fontWeight: "400",
+                fontSize: "12px",
+                color: "var(--text-300)",
+                fontWeight: "400",
               }}>
                 {card.sub}
               </span>

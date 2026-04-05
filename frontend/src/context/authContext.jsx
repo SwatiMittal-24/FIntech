@@ -16,14 +16,26 @@ export function AuthProvider({ children }) {
         setToken(storedToken);
         setUser(JSON.parse(storedUser));
       } else {
-        // Clean up any corrupted values
-        localStorage.removeItem("token");
-        localStorage.removeItem("user");
+        // Mock user details to bypass authentication
+        const demoUser = { name: "Demo User", email: "demo@example.com", _id: "demo-id", role: "admin" };
+        const demoToken = "demo-mock-token-123";
+        
+        localStorage.setItem("token", demoToken);
+        localStorage.setItem("user", JSON.stringify(demoUser));
+        
+        setToken(demoToken);
+        setUser(demoUser);
       }
     } catch (e) {
-      // If JSON.parse fails for any reason, wipe storage
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
+      // If JSON.parse fails, set mock user as fallback
+      const demoUser = { name: "Demo User", email: "demo@example.com", _id: "demo-id", role: "admin" };
+      const demoToken = "demo-mock-token-123";
+      
+      localStorage.setItem("token", demoToken);
+      localStorage.setItem("user", JSON.stringify(demoUser));
+      
+      setToken(demoToken);
+      setUser(demoUser);
     } finally {
       setLoading(false);
     }

@@ -12,30 +12,30 @@ export default function Login() {
   const { login } = useAuth();
   const navigate = useNavigate();
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  setError("");
-  setLoading(true);
-  try {
-    const { data } = await api.post("/api/auth/login", form);
-    
-    // Handle different response structures from backend
-    const token = data.token || data.accessToken || data.jwt;
-    const userData = data.user || data.data || { email: form.email };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
+    try {
+      const { data } = await api.post("/api/auth/login", form);
 
-    if (!token) {
-      setError("Login failed: No token received from server.");
-      return;
+      // Handle different response structures from backend
+      const token = data.token || data.accessToken || data.jwt;
+      const userData = data.user || data.data || { email: form.email };
+
+      if (!token) {
+        setError("Login failed: No token received from server.");
+        return;
+      }
+
+      login(userData, token);
+      navigate("/dashboard");
+    } catch (err) {
+      setError(err.response?.data?.message || "Invalid credentials. Please try again.");
+    } finally {
+      setLoading(false);
     }
-
-    login(userData, token);
-    navigate("/dashboard");
-  } catch (err) {
-    setError(err.response?.data?.message || "Invalid credentials. Please try again.");
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
   return (
     <div

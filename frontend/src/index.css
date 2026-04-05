@@ -202,3 +202,44 @@ body {
 .anim-3 { animation: slideUp 0.4s ease 0.16s forwards; opacity: 0; }
 .anim-4 { animation: slideUp 0.4s ease 0.24s forwards; opacity: 0; }
 .anim-5 { animation: slideUp 0.4s ease 0.32s forwards; opacity: 0; }
+
+html.dark {
+  --bg-app:       #0F172A;
+  --bg-card:      #1E293B;
+  --bg-muted:     #0F172A;
+  --border:       #334155;
+  --text-900:     #F8FAFC;
+  --text-700:     #E2E8F0;
+  --text-500:     #94A3B8;
+  --text-400:     #64748B;
+  --text-300:     #475569;
+  --shadow-sm:    0 1px 3px rgba(0,0,0,0.4);
+  --shadow-md:    0 4px 16px rgba(0,0,0,0.5);
+  --shadow-lg:    0 8px 32px rgba(0,0,0,0.6);
+}
+
+html.dark body {
+  background: var(--bg-app);
+  color: var(--text-900);
+}
+
+html.dark .card {
+  background: var(--bg-card);
+  border-color: var(--border);
+}
+
+html.dark .input {
+  background: var(--bg-card);
+  border-color: var(--border);
+  color: var(--text-900);
+}
+
+html.dark .btn-secondary {
+  background: var(--bg-card);
+  border-color: var(--border);
+  color: var(--text-700);
+}
+html.dark .btn-secondary:hover {
+  background: var(--bg-muted);
+  border-color: var(--blue);
+}

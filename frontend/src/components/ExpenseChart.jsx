@@ -42,8 +42,8 @@ function buildCategoryData(expenses) {
 }
 
 const fmt = (n) =>
-  new Intl.NumberFormat("en-US", {
-    style: "currency", currency: "USD", maximumFractionDigits: 0,
+  new Intl.NumberFormat("en-IN", {
+    style: "currency", currency: "INR", maximumFractionDigits: 0,
   }).format(n);
 
 // ── Custom Tooltip ────────────────────────────────────────────────────────────

@@ -11,7 +11,7 @@ export default function DashboardLayout() {
       display: "flex",
       height: "100vh",
       overflow: "hidden",
-      background: "#F0F4F8",
+      background: "var(--bg-app)",
     }}>
       <Sidebar
         collapsed={collapsed}

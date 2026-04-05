@@ -36,8 +36,8 @@ function Arc({ score }) {
 export default function RiskBadge({ data, loading }) {
   if (loading) return (
     <div style={{
-      background: "#fff", borderRadius: "16px",
-      border: "1px solid #E2E8F0", padding: "20px",
+      background: "var(--bg-card)", borderRadius: "16px",
+      border: "1px solid var(--border)", padding: "20px",
       boxShadow: "0 1px 3px rgba(0,0,0,0.06)",
     }}>
       <div className="shimmer" style={{ height: "12px", width: "130px", borderRadius: "6px", marginBottom: "20px" }} />
@@ -60,8 +60,8 @@ export default function RiskBadge({ data, loading }) {
 
   return (
     <div style={{
-      background: "#fff", borderRadius: "16px",
-      border: "1px solid #E2E8F0", padding: "20px",
+      background: "var(--bg-card)", borderRadius: "16px",
+      border: "1px solid var(--border)", padding: "20px",
       boxShadow: "0 1px 3px rgba(0,0,0,0.06)", height: "100%",
     }}>
       <div style={{
@@ -70,7 +70,7 @@ export default function RiskBadge({ data, loading }) {
       }}>
         <span style={{
           fontSize: "11px", fontWeight: "700",
-          color: "#64748B", letterSpacing: "0.08em",
+          color: "var(--text-400)", letterSpacing: "0.08em",
           textTransform: "uppercase",
         }}>
           Risk Assessment
@@ -96,7 +96,7 @@ export default function RiskBadge({ data, loading }) {
             <div style={{
               display: "flex", justifyContent: "space-between", marginBottom: "7px",
             }}>
-              <span style={{ fontSize: "13px", fontWeight: "600", color: "#475569" }}>Score</span>
+              <span style={{ fontSize: "13px", fontWeight: "600", color: "var(--text-500)" }}>Score</span>
               <span style={{
                 fontSize: "13px", fontFamily: "JetBrains Mono",
                 fontWeight: "700", color: cfg.color,
@@ -106,7 +106,7 @@ export default function RiskBadge({ data, loading }) {
             </div>
             <div style={{
               height: "8px", borderRadius: "99px",
-              background: "#F1F5F9", overflow: "hidden",
+              background: "var(--bg-muted)", overflow: "hidden",
             }}>
               <div style={{
                 height: "100%", borderRadius: "99px",
@@ -120,7 +120,7 @@ export default function RiskBadge({ data, loading }) {
             <div>
               <div style={{
                 fontSize: "10px", fontWeight: "700",
-                color: "#94A3B8", letterSpacing: "0.08em",
+                color: "var(--text-300)", letterSpacing: "0.08em",
                 textTransform: "uppercase", marginBottom: "7px",
               }}>
                 Alerts
@@ -132,7 +132,7 @@ export default function RiskBadge({ data, loading }) {
                   <AlertTriangle size={12} color={cfg.color}
                     style={{ flexShrink: 0, marginTop: "2px" }} />
                   <span style={{
-                    fontSize: "12px", color: "#475569",
+                    fontSize: "12px", color: "var(--text-500)",
                     lineHeight: 1.5, fontWeight: "500",
                   }}>
                     {a}
