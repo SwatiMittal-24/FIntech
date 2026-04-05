@@ -1,208 +1,218 @@
 import {
-  TrendingUp, TrendingDown, Wallet,
-  CreditCard, Activity, ArrowUpRight,
+  TrendingUp, Wallet, CreditCard, Activity,
 } from "lucide-react";
 
-const fmt = (n) =>
-  new Intl.NumberFormat("en-US", {
-    style: "currency", currency: "USD", maximumFractionDigits: 0,
-  }).format(n ?? 0);
-
+const fmt = (n) => new Intl.NumberFormat("en-US", {
+  style: "currency", currency: "USD", maximumFractionDigits: 0,
+}).format(n ?? 0);
 const pct = (n) => `${(Number(n) || 0).toFixed(1)}%`;
-
-const CARDS = (data) => [
-  {
-    label: "Net Worth",
-    value: fmt(data.netWorth),
-    icon: TrendingUp,
-    color: "#2563EB",
-    lightBg: "rgba(37,99,235,0.07)",
-    border: "rgba(37,99,235,0.15)",
-    trend: (data.netWorth ?? 0) >= 0 ? "+Positive" : "Negative",
-    trendUp: (data.netWorth ?? 0) >= 0,
-    sub: "Total assets minus liabilities",
-  },
-  {
-    label: "Bank Balance",
-    value: fmt(data.bankBalance),
-    icon: Wallet,
-    color: "#22C55E",
-    lightBg: "rgba(34,197,94,0.07)",
-    border: "rgba(34,197,94,0.15)",
-    trend: "Available funds",
-    trendUp: true,
-    sub: "Across all accounts",
-  },
-  {
-    label: "Credit Outstanding",
-    value: fmt(data.creditOutstanding),
-    icon: CreditCard,
-    color: "#F59E0B",
-    lightBg: "rgba(245,158,11,0.07)",
-    border: "rgba(245,158,11,0.15)",
-    trend: "Total owed",
-    trendUp: false,
-    sub: "Credit card debt",
-  },
-  {
-    label: "Credit Utilization",
-    value: pct(data.creditUtilization),
-    icon: Activity,
-    color:
-      (Number(data.creditUtilization) || 0) > 70
-        ? "#EF4444"
-        : (Number(data.creditUtilization) || 0) > 40
-        ? "#F59E0B"
-        : "#22C55E",
-    lightBg:
-      (Number(data.creditUtilization) || 0) > 70
-        ? "rgba(239,68,68,0.07)"
-        : (Number(data.creditUtilization) || 0) > 40
-        ? "rgba(245,158,11,0.07)"
-        : "rgba(34,197,94,0.07)",
-    border:
-      (Number(data.creditUtilization) || 0) > 70
-        ? "rgba(239,68,68,0.2)"
-        : (Number(data.creditUtilization) || 0) > 40
-        ? "rgba(245,158,11,0.2)"
-        : "rgba(34,197,94,0.2)",
-    trend:
-      (Number(data.creditUtilization) || 0) <= 30
-        ? "Excellent"
-        : (Number(data.creditUtilization) || 0) <= 70
-        ? "Moderate"
-        : "High Risk",
-    trendUp: (Number(data.creditUtilization) || 0) <= 30,
-    sub: "Recommended under 30%",
-  },
-];
 
 function SkeletonCard() {
   return (
-    <div
-      className="rounded-2xl p-5"
-      style={{
-        background: "#fff",
-        border: "1px solid rgba(0,0,0,0.07)",
-        boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
-      }}
-    >
-      <div className="flex items-center justify-between mb-4">
-        <div className="shimmer h-3 w-28 rounded-full" />
-        <div className="shimmer w-10 h-10 rounded-xl" />
+    <div style={{
+      background: "#fff", borderRadius: "16px",
+      border: "1px solid #E2E8F0", padding: "24px",
+      boxShadow: "0 1px 4px rgba(0,0,0,0.06)",
+    }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "20px" }}>
+        <div>
+          <div className="shimmer" style={{ height: "11px", width: "100px", borderRadius: "6px", marginBottom: "8px" }} />
+          <div className="shimmer" style={{ height: "32px", width: "120px", borderRadius: "8px" }} />
+        </div>
+        <div className="shimmer" style={{ width: "48px", height: "48px", borderRadius: "14px" }} />
       </div>
-      <div className="shimmer h-8 w-36 rounded-lg mb-3" />
-      <div className="shimmer h-2 w-full rounded-full mb-3" />
-      <div className="shimmer h-3 w-24 rounded-full" />
+      <div className="shimmer" style={{ height: "4px", borderRadius: "99px", marginBottom: "14px" }} />
+      <div className="shimmer" style={{ height: "24px", width: "110px", borderRadius: "8px" }} />
     </div>
   );
 }
 
-export default function SummaryCards({ data, loading }) {
-  if (loading) {
-    return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
-        {[1, 2, 3, 4].map((i) => <SkeletonCard key={i} />)}
-      </div>
-    );
-  }
+const getCards = (d) => {
+  const util = Number(d.creditUtilization) || 0;
+  const utilColor  = util > 70 ? "#DC2626" : util > 40 ? "#D97706" : "#16A34A";
+  const utilBg     = util > 70 ? "#FEF2F2" : util > 40 ? "#FFFBEB" : "#F0FDF4";
+  const utilBorder = util > 70 ? "#FECACA" : util > 40 ? "#FDE68A" : "#BBF7D0";
+  const utilLabel  = util > 70 ? "High Risk" : util > 40 ? "Moderate" : "Healthy";
 
-  const cards = CARDS(data || {});
+  return [
+    {
+      label: "Net Worth",
+      value: fmt(d.netWorth),
+      icon: TrendingUp,
+      accent: "#2563EB",
+      iconBg: "#EFF6FF",
+      iconBorder: "#BFDBFE",
+      barColor: "#3B82F6",
+      barPct: 72,
+      badgeText: (d.netWorth ?? 0) >= 0 ? "↑ Positive" : "↓ Negative",
+      badgeBg: (d.netWorth ?? 0) >= 0 ? "#F0FDF4" : "#FEF2F2",
+      badgeColor: (d.netWorth ?? 0) >= 0 ? "#15803D" : "#DC2626",
+      badgeBorder: (d.netWorth ?? 0) >= 0 ? "#86EFAC" : "#FECACA",
+      sub: "Assets minus liabilities",
+    },
+    {
+      label: "Bank Balance",
+      value: fmt(d.bankBalance),
+      icon: Wallet,
+      accent: "#16A34A",
+      iconBg: "#F0FDF4",
+      iconBorder: "#86EFAC",
+      barColor: "#22C55E",
+      barPct: 60,
+      badgeText: "↑ Available",
+      badgeBg: "#F0FDF4",
+      badgeColor: "#15803D",
+      badgeBorder: "#86EFAC",
+      sub: "Across all accounts",
+    },
+    {
+      label: "Credit Outstanding",
+      value: fmt(d.creditOutstanding),
+      icon: CreditCard,
+      accent: "#D97706",
+      iconBg: "#FFFBEB",
+      iconBorder: "#FCD34D",
+      barColor: "#F59E0B",
+      barPct: 45,
+      badgeText: "→ Total Owed",
+      badgeBg: "#FFFBEB",
+      badgeColor: "#92400E",
+      badgeBorder: "#FCD34D",
+      sub: "Credit card balance",
+    },
+    {
+      label: "Credit Utilization",
+      value: pct(d.creditUtilization),
+      icon: Activity,
+      accent: utilColor,
+      iconBg: utilBg,
+      iconBorder: utilBorder,
+      barColor: utilColor,
+      barPct: util,
+      badgeText: utilLabel,
+      badgeBg: utilBg,
+      badgeColor: utilColor,
+      badgeBorder: utilBorder,
+      sub: "Recommended under 30%",
+      isUtil: true,
+    },
+  ];
+};
+
+export default function SummaryCards({ data, loading }) {
+  if (loading) return (
+    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(210px, 1fr))", gap: "16px" }}>
+      {[1,2,3,4].map(i => <SkeletonCard key={i} />)}
+    </div>
+  );
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
-      {cards.map((card, i) => {
+    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(210px, 1fr))", gap: "16px" }}>
+      {getCards(data || {}).map((card, i) => {
         const Icon = card.icon;
         return (
           <div
             key={card.label}
-            className="rounded-2xl p-5 cursor-default transition-all duration-200"
             style={{
-              background: "#fff",
-              border: `1px solid rgba(0,0,0,0.07)`,
-              boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
-              animationDelay: `${i * 0.07}s`,
-              animation: "slideUp 0.4s ease forwards",
+              background: "#FFFFFF",
+              borderRadius: "16px",
+              border: `1px solid #E2E8F0`,
+              padding: "22px",
+              boxShadow: "0 1px 4px rgba(0,0,0,0.06)",
+              cursor: "default",
+              transition: "all 0.22s ease",
+              animation: `slideUp 0.4s ease ${i * 0.08}s forwards`,
               opacity: 0,
+              position: "relative",
+              overflow: "hidden",
             }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.borderColor = card.border;
-              e.currentTarget.style.boxShadow = `0 8px 24px ${card.lightBg}, 0 0 0 1px ${card.border}`;
-              e.currentTarget.style.transform = "translateY(-2px)";
+            onMouseEnter={e => {
+              e.currentTarget.style.transform = "translateY(-4px)";
+              e.currentTarget.style.boxShadow = `0 12px 28px rgba(0,0,0,0.11)`;
+              e.currentTarget.style.borderColor = card.iconBorder;
             }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.borderColor = "rgba(0,0,0,0.07)";
-              e.currentTarget.style.boxShadow = "0 1px 3px rgba(0,0,0,0.05)";
+            onMouseLeave={e => {
               e.currentTarget.style.transform = "translateY(0)";
+              e.currentTarget.style.boxShadow = "0 1px 4px rgba(0,0,0,0.06)";
+              e.currentTarget.style.borderColor = "#E2E8F0";
             }}
           >
-            {/* Top row */}
-            <div className="flex items-start justify-between mb-3">
-              <span
-                className="text-xs font-semibold uppercase tracking-widest"
-                style={{ color: "#9CA3AF" }}
-              >
+            {/* Top accent line */}
+            <div style={{
+              position: "absolute", top: 0, left: 0, right: 0,
+              height: "3px", background: card.accent,
+              borderRadius: "16px 16px 0 0",
+            }} />
+
+            {/* Header: label + icon */}
+            <div style={{
+              display: "flex", justifyContent: "space-between",
+              alignItems: "flex-start", marginBottom: "16px",
+            }}>
+              <span style={{
+                fontSize: "11px", fontWeight: "700",
+                color: "#64748B", letterSpacing: "0.07em",
+                textTransform: "uppercase", marginTop: "2px",
+              }}>
                 {card.label}
               </span>
-              <div
-                className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
-                style={{
-                  background: card.lightBg,
-                  border: `1px solid ${card.border}`,
-                }}
-              >
-                <Icon size={16} style={{ color: card.color }} strokeWidth={2} />
+              <div style={{
+                width: "46px", height: "46px", borderRadius: "13px",
+                background: card.iconBg,
+                border: `1.5px solid ${card.iconBorder}`,
+                display: "flex", alignItems: "center", justifyContent: "center",
+                flexShrink: 0,
+                boxShadow: `0 2px 8px ${card.iconBorder}80`,
+              }}>
+                <Icon size={20} color={card.accent} strokeWidth={2} />
               </div>
             </div>
 
             {/* Value */}
-            <div className="mb-3">
-              <span
-                className="text-2xl font-bold tracking-tight"
-                style={{ color: "#111827", fontFamily: "DM Mono, monospace" }}
-              >
-                {card.value}
+            <div style={{
+              fontFamily: "JetBrains Mono, monospace",
+              fontSize: "clamp(22px, 2.5vw, 28px)",
+              fontWeight: "700",
+              color: "#0F172A",
+              letterSpacing: "-0.02em",
+              marginBottom: "14px",
+              lineHeight: 1.1,
+            }}>
+              {card.value}
+            </div>
+
+            {/* Progress bar */}
+            <div style={{
+              height: "5px", borderRadius: "99px",
+              background: "#F1F5F9",
+              marginBottom: "14px", overflow: "hidden",
+            }}>
+              <div style={{
+                height: "100%", borderRadius: "99px",
+                width: `${Math.min(card.barPct, 100)}%`,
+                background: card.barColor,
+                transition: "width 1s ease",
+              }} />
+            </div>
+
+            {/* Badge + sub text */}
+            <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
+              <span style={{
+                padding: "4px 10px", borderRadius: "8px",
+                fontSize: "12px", fontWeight: "700",
+                background: card.badgeBg,
+                color: card.badgeColor,
+                border: `1px solid ${card.badgeBorder}`,
+                letterSpacing: "0.01em",
+              }}>
+                {card.badgeText}
+              </span>
+              <span style={{
+                fontSize: "12px", color: "#94A3B8", fontWeight: "400",
+              }}>
+                {card.sub}
               </span>
             </div>
-
-            {/* Mini progress bar for utilization */}
-            {card.label === "Credit Utilization" && (
-              <div
-                className="h-1.5 rounded-full overflow-hidden mb-3"
-                style={{ background: "#F3F4F6" }}
-              >
-                <div
-                  className="h-full rounded-full"
-                  style={{
-                    width: card.value,
-                    background: card.color,
-                    transition: "width 0.7s ease",
-                  }}
-                />
-              </div>
-            )}
-
-            {/* Trend row */}
-            <div className="flex items-center gap-1.5">
-              <div
-                className="flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium"
-                style={{
-                  background: card.trendUp
-                    ? "rgba(34,197,94,0.1)"
-                    : "rgba(239,68,68,0.08)",
-                  color: card.trendUp ? "#22C55E" : "#EF4444",
-                }}
-              >
-                {card.trendUp
-                  ? <ArrowUpRight size={11} />
-                  : <TrendingDown size={11} />}
-                {card.trend}
-              </div>
-            </div>
-
-            <p className="text-xs mt-2" style={{ color: "#9CA3AF" }}>
-              {card.sub}
-            </p>
           </div>
         );
       })}
