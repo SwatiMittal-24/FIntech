@@ -104,7 +104,7 @@ exports.analyzeFinance = async (req, res, next) => {
       where: { userId },
     });
 
-    const budgetLimit = budget ? budget.amount : null;
+    const budgetLimit = budget ? budget.limit : null;
 
     // ===== RULE ENGINE =====
     const riskReport = generateRiskReport({

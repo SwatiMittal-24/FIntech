@@ -4,7 +4,7 @@ const { success } = require("../utils/response");
 // Add Expense
 exports.addExpense = async (req, res, next) => {
   try {
-    const { amount, category, note } = req.body;
+    const { title, amount, category, description } = req.body;
 
     if (!amount || amount <= 0) {
   return res.status(400).json({ message: "Amount must be greater than 0" });
@@ -20,9 +20,10 @@ if (!category || category.trim() === "") {
 
     const expense = await prisma.expense.create({
       data: {
+        title: title || "Untitled",
         amount: parseFloat(amount),
         category,
-        note,
+        note: description || null,
         userId: req.user.userId, // coming from JWT middleware
       },
     });
