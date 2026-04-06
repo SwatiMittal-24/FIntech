@@ -20,3 +20,6 @@ build
 
 # prisma
 prisma/dev.db
+
+node_modules/
+*.db

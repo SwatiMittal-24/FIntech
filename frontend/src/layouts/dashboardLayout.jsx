@@ -1,21 +1,36 @@
+import { useState } from "react";
 import { Outlet } from "react-router-dom";
 import Sidebar from "../components/sidebar";
 import Navbar from "../components/Navbar";
-import { useState } from "react";
 
 export default function DashboardLayout() {
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(false);
 
   return (
-    <div className="flex h-screen overflow-hidden" style={{ background: "#F3F4F6" }}>
+    <div style={{
+      display: "flex",
+      height: "100vh",
+      overflow: "hidden",
+      background: "var(--bg-app)",
+    }}>
       <Sidebar
-        collapsed={sidebarCollapsed}
-        onToggle={() => setSidebarCollapsed((p) => !p)}
+        collapsed={collapsed}
+        onToggle={() => setCollapsed(p => !p)}
       />
-      <div className="flex flex-col flex-1 min-w-0 transition-all duration-300">
+      <div style={{
+        flex: 1,
+        display: "flex",
+        flexDirection: "column",
+        minWidth: 0,
+        overflow: "hidden",
+      }}>
         <Navbar />
-        <main className="flex-1 overflow-y-auto p-6 lg:p-8">
-          <div className="relative z-10 max-w-7xl mx-auto">
+        <main style={{
+          flex: 1,
+          overflowY: "auto",
+          padding: "clamp(16px, 2.5vw, 28px)",
+        }}>
+          <div style={{ maxWidth: "1280px", margin: "0 auto" }}>
             <Outlet />
           </div>
         </main>

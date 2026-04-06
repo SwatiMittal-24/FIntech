@@ -6,179 +6,226 @@ import {
 } from "lucide-react";
 import { useAuth } from "../context/authContext";
 
-const NAV_ITEMS = [
-  { to: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
-  { to: "/expenses",  icon: Receipt,         label: "Expenses"  },
-  { to: "/accounts",  icon: Building2,        label: "Accounts"  },
-  { to: "/cards",     icon: CreditCard,       label: "Cards"     },
-  { to: "/budget",    icon: PiggyBank,        label: "Budget"    },
+const NAV = [
+  { to: "/dashboard", icon: LayoutDashboard, label: "Dashboard"    },
+  { to: "/expenses",  icon: Receipt,         label: "Expenses"     },
+  { to: "/accounts",  icon: Building2,        label: "Accounts"     },
+  { to: "/cards",     icon: CreditCard,       label: "Credit Cards" },
+  { to: "/budget",    icon: PiggyBank,        label: "Budget"       },
 ];
 
 export default function Sidebar({ collapsed, onToggle }) {
   const { logout, user } = useAuth();
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    logout();
-    navigate("/login");
-  };
-
   return (
-    <aside
-      className="relative flex flex-col shrink-0 h-screen transition-all duration-300 overflow-visible"
-      style={{
-        width: collapsed ? "72px" : "220px",
-        background: "#FFFFFF",
-        borderRight: "1px solid rgba(0,0,0,0.08)",
-        boxShadow: "2px 0 8px rgba(0,0,0,0.04)",
-        zIndex: 40,
-      }}
-    >
+    <aside style={{
+      width: collapsed ? "68px" : "240px",
+      minWidth: collapsed ? "68px" : "240px",
+      height: "100vh",
+      background: "#0F172A",
+      display: "flex",
+      flexDirection: "column",
+      transition: "width 0.3s cubic-bezier(0.4,0,0.2,1), min-width 0.3s cubic-bezier(0.4,0,0.2,1)",
+      position: "relative",
+      zIndex: 40,
+      overflow: "visible",
+      flexShrink: 0,
+    }}>
+
       {/* Logo */}
-      <div
-        className="flex items-center gap-3 px-4 py-5 shrink-0"
-        style={{ borderBottom: "1px solid rgba(0,0,0,0.06)" }}
-      >
-        <div
-          className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
-          style={{
-            background: "linear-gradient(135deg, #2563EB, #1d4ed8)",
-            boxShadow: "0 4px 12px rgba(37,99,235,0.3)",
-          }}
-        >
-          <Zap size={15} color="#ffffff" strokeWidth={2.5} />
+      <div style={{
+        padding: "18px 14px",
+        borderBottom: "1px solid rgba(255,255,255,0.07)",
+        display: "flex", alignItems: "center", gap: "10px",
+        overflow: "hidden",
+      }}>
+        <div style={{
+          width: "36px", height: "36px", borderRadius: "10px",
+          flexShrink: 0,
+          background: "linear-gradient(135deg, #3B82F6, #1D4ED8)",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          boxShadow: "0 4px 12px rgba(59,130,246,0.45)",
+        }}>
+          <Zap size={16} color="#fff" strokeWidth={2.5} />
         </div>
         {!collapsed && (
-          <div className="overflow-hidden">
-            <span className="text-sm font-semibold tracking-tight text-gray-900 whitespace-nowrap">
-              Finance<span style={{ color: "#2563EB" }}>AI</span>
-            </span>
-            <p className="text-[10px] tracking-widest uppercase" style={{ color: "#6B7280" }}>
-              Dashboard
-            </p>
+          <div>
+            <div style={{
+              fontFamily: "Outfit, sans-serif",
+              fontSize: "17px", fontWeight: "700",
+              color: "#F8FAFC", whiteSpace: "nowrap",
+            }}>
+              Finance<span style={{ color: "#60A5FA" }}>AI</span>
+            </div>
+            <div style={{
+              fontSize: "10px", fontWeight: "600", color: "var(--text-500)",
+              letterSpacing: "0.08em", textTransform: "uppercase",
+            }}>
+              Smart Finance
+            </div>
           </div>
         )}
       </div>
 
-      {/* Toggle button — fixed position relative to sidebar edge */}
+      {/* ── TOGGLE BUTTON — fixed on sidebar edge ── */}
       <button
         onClick={onToggle}
-        className="absolute flex items-center justify-center cursor-pointer transition-all duration-150"
+        title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
         style={{
-          width: "22px",
-          height: "22px",
+          position: "absolute",
+          top: "72px",
+          right: "-16px",
+          width: "32px",
+          height: "32px",
           borderRadius: "50%",
-          background: "#FFFFFF",
-          border: "1.5px solid rgba(0,0,0,0.12)",
-          color: "#6B7280",
-          right: "-11px",
-          top: "62px",
-          zIndex: 50,
-          boxShadow: "0 1px 4px rgba(0,0,0,0.12)",
+          background: "#1E40AF",
+          border: "2px solid #FFFFFF",
+          color: "#FFFFFF",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          cursor: "pointer",
+          zIndex: 100,
+          boxShadow: "0 2px 8px rgba(0,0,0,0.25)",
+          transition: "all 0.2s ease",
+          outline: "none",
         }}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.borderColor = "#2563EB";
-          e.currentTarget.style.color = "#2563EB";
+        onMouseEnter={e => {
+          e.currentTarget.style.background = "#2563EB";
+          e.currentTarget.style.transform = "scale(1.12)";
+          e.currentTarget.style.boxShadow = "0 4px 14px rgba(37,99,235,0.5)";
         }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.borderColor = "rgba(0,0,0,0.12)";
-          e.currentTarget.style.color = "#6B7280";
+        onMouseLeave={e => {
+          e.currentTarget.style.background = "#1E40AF";
+          e.currentTarget.style.transform = "scale(1)";
+          e.currentTarget.style.boxShadow = "0 2px 8px rgba(0,0,0,0.25)";
         }}
       >
         {collapsed
-          ? <ChevronRight size={11} />
-          : <ChevronLeft size={11} />}
+          ? <ChevronRight size={15} strokeWidth={2.5} />
+          : <ChevronLeft  size={15} strokeWidth={2.5} />
+        }
       </button>
 
       {/* Nav */}
-      <nav className="flex-1 px-2 py-4 overflow-y-auto overflow-x-hidden">
+      <nav style={{
+        flex: 1, padding: "14px 8px",
+        overflowY: "auto", overflowX: "hidden",
+      }}>
         {!collapsed && (
-          <p className="section-title px-2 mb-3">Navigation</p>
+          <div style={{
+            fontSize: "10px", fontWeight: "700", color: "#334155",
+            letterSpacing: "0.1em", textTransform: "uppercase",
+            padding: "0 8px", marginBottom: "8px",
+          }}>
+            Menu
+          </div>
         )}
-        <ul className="flex flex-col gap-0.5">
-          {NAV_ITEMS.map(({ to, icon: Icon, label }) => (
-            <li key={to}>
-              <NavLink
-                to={to}
-                title={collapsed ? label : undefined}
-                className={({ isActive }) =>
-                  `flex items-center gap-3 px-2.5 py-2.5 rounded-lg text-sm transition-all duration-150 relative ${
-                    isActive ? "" : "hover:bg-gray-50"
-                  }`
-                }
-                style={({ isActive }) =>
-                  isActive
-                    ? {
-                        background: "rgba(37,99,235,0.08)",
-                        color: "#2563EB",
-                        fontWeight: 600,
-                      }
-                    : { color: "#374151" }
-                }
-              >
-                {({ isActive }) => (
-                  <>
-                    {isActive && (
-                      <span
-                        className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 rounded-r-full"
-                        style={{ background: "#2563EB" }}
-                      />
-                    )}
-                    <Icon
-                      size={16}
-                      strokeWidth={isActive ? 2.5 : 1.8}
-                      className="shrink-0"
-                    />
-                    {!collapsed && (
-                      <span className="whitespace-nowrap">{label}</span>
-                    )}
-                  </>
+        {NAV.map(({ to, icon: Icon, label }) => (
+          <NavLink key={to} to={to}
+            title={collapsed ? label : undefined}
+            style={({ isActive }) => ({
+              display: "flex", alignItems: "center",
+              gap: "10px", padding: "10px 10px",
+              borderRadius: "10px", marginBottom: "3px",
+              textDecoration: "none", position: "relative",
+              transition: "all 0.15s ease",
+              background: isActive ? "rgba(59,130,246,0.18)" : "transparent",
+              color: isActive ? "#93C5FD" : "#94A3B8",
+            })}
+            onMouseEnter={e => {
+              const isActive = e.currentTarget.getAttribute("aria-current") === "page";
+              if (!isActive) {
+                e.currentTarget.style.background = "rgba(255,255,255,0.07)";
+                e.currentTarget.style.color = "#E2E8F0";
+              }
+            }}
+            onMouseLeave={e => {
+              const isActive = e.currentTarget.getAttribute("aria-current") === "page";
+              e.currentTarget.style.background = isActive ? "rgba(59,130,246,0.18)" : "transparent";
+              e.currentTarget.style.color = isActive ? "#93C5FD" : "#94A3B8";
+            }}
+          >
+            {({ isActive }) => (
+              <>
+                {isActive && (
+                  <span style={{
+                    position: "absolute", left: 0, top: "50%",
+                    transform: "translateY(-50%)",
+                    width: "3px", height: "22px",
+                    background: "#3B82F6", borderRadius: "0 3px 3px 0",
+                  }} />
                 )}
-              </NavLink>
-            </li>
-          ))}
-        </ul>
+                <Icon size={18} strokeWidth={isActive ? 2.5 : 1.8} style={{ flexShrink: 0 }} />
+                {!collapsed && (
+                  <span style={{
+                    fontSize: "14px",
+                    fontWeight: isActive ? "600" : "500",
+                    whiteSpace: "nowrap",
+                  }}>
+                    {label}
+                  </span>
+                )}
+              </>
+            )}
+          </NavLink>
+        ))}
       </nav>
 
       {/* User + Logout */}
-      <div
-        className="px-2 py-3 shrink-0"
-        style={{ borderTop: "1px solid rgba(0,0,0,0.06)" }}
-      >
+      <div style={{ borderTop: "1px solid rgba(255,255,255,0.07)", padding: "10px 8px" }}>
         {!collapsed && user && (
-          <div className="flex items-center gap-2.5 px-2.5 py-2 mb-1">
-            <div
-              className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-semibold shrink-0 text-white"
-              style={{ background: "linear-gradient(135deg, #2563EB, #1d4ed8)" }}
-            >
+          <div style={{
+            display: "flex", alignItems: "center", gap: "10px",
+            padding: "10px", marginBottom: "4px",
+          }}>
+            <div style={{
+              width: "34px", height: "34px", borderRadius: "9px", flexShrink: 0,
+              background: "linear-gradient(135deg, #3B82F6, #1D4ED8)",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              fontSize: "13px", fontWeight: "700", color: "#fff",
+            }}>
               {(user.name || user.email || "U")[0].toUpperCase()}
             </div>
-            <div className="overflow-hidden">
-              <p className="text-xs font-medium text-gray-800 truncate">
+            <div style={{ overflow: "hidden", flex: 1 }}>
+              <div style={{
+                fontSize: "13px", fontWeight: "600", color: "#E2E8F0",
+                whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
+              }}>
                 {user.name || "User"}
-              </p>
-              <p className="text-[10px] truncate" style={{ color: "#6B7280" }}>
+              </div>
+              <div style={{
+                fontSize: "11px", color: "var(--text-500)",
+                whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
+              }}>
                 {user.email}
-              </p>
+              </div>
             </div>
           </div>
         )}
         <button
-          onClick={handleLogout}
-          className="flex items-center gap-3 w-full px-2.5 py-2.5 rounded-lg text-sm transition-all duration-150 cursor-pointer bg-transparent"
-          style={{ color: "#6B7280" }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.color = "#EF4444";
-            e.currentTarget.style.background = "rgba(239,68,68,0.06)";
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.color = "#6B7280";
-            e.currentTarget.style.background = "transparent";
-          }}
+          onClick={() => { logout(); navigate("/login"); }}
           title={collapsed ? "Logout" : undefined}
+          style={{
+            display: "flex", alignItems: "center", gap: "10px",
+            width: "100%", padding: "10px", borderRadius: "10px",
+            background: "transparent", border: "none",
+            color: "var(--text-400)", cursor: "pointer",
+            transition: "all 0.15s ease",
+            fontSize: "14px", fontWeight: "500",
+          }}
+          onMouseEnter={e => {
+            e.currentTarget.style.background = "rgba(239,68,68,0.12)";
+            e.currentTarget.style.color = "#FCA5A5";
+          }}
+          onMouseLeave={e => {
+            e.currentTarget.style.background = "transparent";
+            e.currentTarget.style.color = "#64748B";
+          }}
         >
-          <LogOut size={16} strokeWidth={1.8} className="shrink-0" />
-          {!collapsed && <span className="font-medium">Logout</span>}
+          <LogOut size={17} strokeWidth={1.8} style={{ flexShrink: 0 }} />
+          {!collapsed && <span style={{ whiteSpace: "nowrap" }}>Logout</span>}
         </button>
       </div>
     </aside>

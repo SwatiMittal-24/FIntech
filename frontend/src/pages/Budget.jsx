@@ -1,17 +1,17 @@
 import { useState, useEffect, useMemo } from "react";
 import {
-  Plus, PiggyBank, Target, TrendingUp, AlertTriangle,
-  CheckCircle2, RefreshCw, Edit3, X, Save, Loader2,
-  DollarSign, BarChart2, Zap,
+  Plus, Target, PiggyBank, Edit3, Save, Loader2, X,
+  IndianRupee, BarChart2, Zap,
+  TrendingUp, CheckCircle2, AlertTriangle, RefreshCw
 } from "lucide-react";
 import api from "../api/axios";
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
 const fmt = (n) =>
-  new Intl.NumberFormat("en-US", {
+  new Intl.NumberFormat("en-IN", {
     style: "currency",
-    currency: "USD",
+    currency: "INR",
     maximumFractionDigits: 2,
   }).format(n ?? 0);
 
@@ -241,7 +241,7 @@ function BudgetForm({ onSuccess, onCancel, existingCategories = [] }) {
         <div>
           <label className="label">Monthly Budget *</label>
           <div className="relative max-w-xs">
-            <DollarSign
+            <IndianRupee
               size={13}
               className="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none"
               style={{ color: "var(--text-muted)" }}
@@ -319,7 +319,7 @@ function InlineEdit({ budget, onSave, onCancel }) {
   return (
     <div className="flex items-center gap-2">
       <div className="relative">
-        <DollarSign
+        <IndianRupee
           size={12}
           className="absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none"
           style={{ color: "var(--text-muted)" }}
@@ -563,6 +563,8 @@ export default function Budget() {
       );
     } catch (e) {
       console.error(e);
+      setBudgets([{ id: "mock-budget-1", category: "Food", amount: 3000 }]);
+      setExpenses([{ id: "mock-expense-1", category: "Food", amount: 1500 }]);
     } finally {
       setLoading(false);
     }

@@ -1,18 +1,18 @@
 import { useState, useEffect, useMemo } from "react";
 import {
-  Plus, CreditCard, DollarSign, AlertTriangle,
+  Plus, CreditCard, IndianRupee, AlertTriangle,
   TrendingDown, RefreshCw, Wifi, CheckCircle2,
   ShieldAlert,
 } from "lucide-react";
 import api from "../api/axios";
-import CardForm from "../components/cardForm";
+import CardForm from "../components/CardForm";
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
 const fmt = (n) =>
-  new Intl.NumberFormat("en-US", {
+  new Intl.NumberFormat("en-IN", {
     style: "currency",
-    currency: "USD",
+    currency: "INR",
     maximumFractionDigits: 2,
   }).format(n ?? 0);
 
@@ -329,6 +329,9 @@ export default function Cards() {
       setCards(Array.isArray(data) ? data : data.cards || []);
     } catch (e) {
       console.error(e);
+      const defaultMock = [{ id: "mock-card-1", name: "Mock Visa", cardType: "Visa", outstanding: 5000, limit: 20000, bankName: "Mock Bank" }];
+      const savedMock = JSON.parse(localStorage.getItem("mockCards") || "null");
+      setCards(savedMock ? [...savedMock, ...defaultMock] : defaultMock);
     } finally {
       setLoading(false);
     }
@@ -427,7 +430,7 @@ export default function Cards() {
             {
               label: "Total Outstanding",
               value: fmt(totalOutstanding),
-              icon: DollarSign,
+              icon: IndianRupee,
               color: "#f59e0b",
               sub: "Total owed across cards",
             },

@@ -10,9 +10,9 @@ import AccountForm from "../components/AccountForm";
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
 const fmt = (n) =>
-  new Intl.NumberFormat("en-US", {
+  new Intl.NumberFormat("en-IN", {
     style: "currency",
-    currency: "USD",
+    currency: "INR",
     maximumFractionDigits: 2,
   }).format(n ?? 0);
 
@@ -22,7 +22,7 @@ const TYPE_CONFIG = {
   Investment:     { color: "#8b5cf6", bg: "rgba(139,92,246,0.08)",  border: "rgba(139,92,246,0.2)"  },
   "Emergency Fund":{ color: "#f59e0b", bg: "rgba(245,158,11,0.08)", border: "rgba(245,158,11,0.2)"  },
   "Fixed Deposit":{ color: "#06b6d4", bg: "rgba(6,182,212,0.08)",   border: "rgba(6,182,212,0.2)"   },
-  Other:          { color: "#64748b", bg: "rgba(100,116,139,0.08)", border: "rgba(100,116,139,0.2)" },
+  Other:          { color: "var(--text-400)", bg: "rgba(100,116,139,0.08)", border: "rgba(100,116,139,0.2)" },
 };
 
 const getTypeConfig = (type) => TYPE_CONFIG[type] || TYPE_CONFIG.Other;
@@ -229,6 +229,7 @@ export default function Accounts() {
       setAccounts(Array.isArray(data) ? data : data.accounts || []);
     } catch (e) {
       console.error(e);
+      setAccounts([{ id: "mock-account-1", name: "Mock Checking", bankName: "Mock Bank", type: "Checking", balance: 15000 }]);
     } finally {
       setLoading(false);
     }

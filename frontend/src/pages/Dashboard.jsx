@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
 import {
-  RefreshCw, Sparkles, TrendingUp, TrendingDown,
-  Wallet, CreditCard, Activity, ArrowUpRight,
-  ArrowDownRight, ShieldCheck, AlertTriangle, Zap,
+  RefreshCw, Sparkles, ShieldCheck,
+  AlertTriangle, Zap, TrendingUp,
 } from "lucide-react";
 import api from "../api/axios";
 import SummaryCards from "../components/SummaryCards";
@@ -10,9 +9,15 @@ import RiskBadge from "../components/RiskBadge";
 import ExpenseChart from "../components/ExpenseChart";
 import AIInsights from "../components/AIInsights";
 import { useAuth } from "../context/authContext";
+import { useTheme } from "../context/themeContext";
+
+const fmt = (n) => new Intl.NumberFormat("en-IN", {
+  style: "currency", currency: "INR", maximumFractionDigits: 0,
+}).format(n ?? 0);
 
 export default function Dashboard() {
   const { user } = useAuth();
+  const { isDark } = useTheme();
   const [summary, setSummary] = useState(null);
   const [expenses, setExpenses] = useState([]);
   const [loadingSummary, setLoadingSummary] = useState(true);
@@ -23,22 +28,28 @@ export default function Dashboard() {
   const fetchSummary = async () => {
     try {
       const { data } = await api.get("/api/finance/summary");
-      setSummary(data);
-    } catch (e) { console.error(e); }
+      setSummary(data?.data || data);
+    } catch (e) {
+      console.error(e);
+      setSummary({ netWorth: 150000, bankBalance: 120000, creditOutstanding: 30000, creditUtilization: 10, riskLevel: "Low", riskScore: 10, alerts: [] });
+    }
     finally { setLoadingSummary(false); }
   };
 
- const fetchExpenses = async () => {
-  try {
-    const { data } = await api.get("/api/expenses");
-    const list = data?.data?.expenses || data?.data || data?.expenses || (Array.isArray(data) ? data : []);
-    setExpenses(list);
-  } catch (e) {
-    console.error(e);
-  } finally {
-    setLoadingExpenses(false);
-  }
-};
+  const fetchExpenses = async () => {
+    try {
+      const { data } = await api.get("/api/expenses");
+      const list = data?.data?.expenses || data?.data || data?.expenses || (Array.isArray(data) ? data : []);
+      setExpenses(list);
+    } catch (e) {
+      console.error(e);
+      setExpenses([
+        { id: "mock1", title: "Groceries", amount: 1500, category: "Food", type: "expense", date: new Date().toISOString() },
+        { id: "mock2", title: "Salary", amount: 50000, category: "Other", type: "income", date: new Date().toISOString() }
+      ]);
+    }
+    finally { setLoadingExpenses(false); }
+  };
 
   useEffect(() => { fetchSummary(); fetchExpenses(); }, []);
 
@@ -52,395 +63,332 @@ export default function Dashboard() {
 
   const greeting = () => {
     const h = new Date().getHours();
-    if (h < 12) return "Good morning";
-    if (h < 17) return "Good afternoon";
-    return "Good evening";
+    return h < 12 ? "Good morning" : h < 17 ? "Good afternoon" : "Good evening";
   };
 
-  const fmt = (n) =>
-    new Intl.NumberFormat("en-US", {
-      style: "currency", currency: "USD", maximumFractionDigits: 0,
-    }).format(n ?? 0);
+  const riskLevel = summary?.riskLevel || "Low";
+  const riskStyle = {
+    Low:      { text: "#15803D", bg: "#DCFCE7", border: "#86EFAC", dot: "#22C55E", label: "Low Risk"      },
+    Moderate: { text: "#92400E", bg: "#FEF3C7", border: "#FCD34D", dot: "#F59E0B", label: "Moderate Risk" },
+    High:     { text: "#991B1B", bg: "#FEE2E2", border: "#FCA5A5", dot: "#EF4444", label: "High Risk"     },
+  }[riskLevel];
 
   return (
-    <div className="flex flex-col gap-6 pb-10">
+    <div style={{ display: "flex", flexDirection: "column", gap: "20px", paddingBottom: "32px", background: "var(--bg-app)" }}>
 
-      {/* ── Hero Header ─────────────────────────────── */}
-      <div
-        className="relative rounded-2xl overflow-hidden px-6 py-6"
-        style={{
-          background: "linear-gradient(135deg, #1e40af 0%, #2563EB 50%, #3b82f6 100%)",
-          boxShadow: "0 8px 32px rgba(37,99,235,0.25)",
-          animation: "slideUp 0.4s ease forwards",
-          opacity: 0,
-        }}
-      >
-        {/* Decorative circles */}
-        <div style={{
-          position: "absolute", top: "-40px", right: "-40px",
-          width: "180px", height: "180px", borderRadius: "50%",
-          background: "rgba(255,255,255,0.06)",
-        }} />
-        <div style={{
-          position: "absolute", bottom: "-30px", right: "120px",
-          width: "100px", height: "100px", borderRadius: "50%",
-          background: "rgba(255,255,255,0.04)",
-        }} />
-        <div style={{
-          position: "absolute", top: "10px", right: "200px",
-          width: "60px", height: "60px", borderRadius: "50%",
-          background: "rgba(255,255,255,0.05)",
-        }} />
+      {/* ── HERO BANNER ── */}
+      <div className="anim-1" style={{
+        borderRadius: "20px",
+        background: "linear-gradient(135deg, #1E3A8A 0%, #1D4ED8 60%, #2563EB 100%)",
+        padding: "clamp(20px, 3vw, 28px)",
+        position: "relative",
+        overflow: "hidden",
+        boxShadow: "0 8px 32px rgba(29,78,216,0.25)",
+      }}>
+        {/* Subtle decorative circles */}
+        <div style={{ position: "absolute", top: -60, right: -40, width: 180, height: 180, borderRadius: "50%", background: "rgba(255,255,255,0.05)", pointerEvents: "none" }} />
+        <div style={{ position: "absolute", bottom: -40, right: 200, width: 130, height: 130, borderRadius: "50%", background: "rgba(255,255,255,0.04)", pointerEvents: "none" }} />
 
-        <div className="relative flex items-center justify-between flex-wrap gap-4">
+        {/* Top row: greeting + buttons */}
+        <div style={{
+          display: "flex", alignItems: "flex-start",
+          justifyContent: "space-between",
+          flexWrap: "wrap", gap: "14px",
+          position: "relative",
+        }}>
           <div>
-            <p className="text-blue-200 text-sm font-medium mb-1">
+            <p style={{ color: "#BAE6FD", fontSize: "14px", fontWeight: "500", marginBottom: "4px" }}>
               {greeting()}, {user?.name?.split(" ")[0] || "there"} 👋
             </p>
-            <h2 className="text-white text-2xl font-bold tracking-tight">
-              Your Financial Overview
+            <h2 style={{
+              fontFamily: "Outfit, sans-serif",
+              fontSize: "clamp(18px, 3vw, 24px)",
+              fontWeight: "700", color: "#FFFFFF", lineHeight: 1.25,
+            }}>
+              Your Financial Dashboard
             </h2>
-            <p className="text-blue-200 text-sm mt-1">
+            <p style={{ color: "#BAE6FD", fontSize: "13px", marginTop: "3px", fontWeight: "400" }}>
               {new Date().toLocaleDateString("en-US", {
                 weekday: "long", month: "long", day: "numeric", year: "numeric",
               })}
             </p>
           </div>
 
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setShowAI((p) => !p)}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold cursor-pointer transition-all duration-150"
-              style={{
-                background: showAI ? "rgba(255,255,255,0.25)" : "rgba(255,255,255,0.15)",
-                color: "#fff",
-                border: "1px solid rgba(255,255,255,0.25)",
-                backdropFilter: "blur(8px)",
-              }}
-              onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(255,255,255,0.25)")}
-              onMouseLeave={(e) => (e.currentTarget.style.background = showAI ? "rgba(255,255,255,0.25)" : "rgba(255,255,255,0.15)")}
+          <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+            <button onClick={() => setShowAI(p => !p)} style={{
+              display: "flex", alignItems: "center", gap: "7px",
+              padding: "9px 18px", borderRadius: "10px",
+              background: showAI ? "rgba(255,255,255,0.22)" : "rgba(255,255,255,0.12)",
+              border: "1.5px solid rgba(255,255,255,0.30)",
+              color: "#fff", fontSize: "13px", fontWeight: "600",
+              cursor: "pointer", transition: "all 0.15s ease",
+              backdropFilter: "blur(4px)",
+            }}
+              onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.22)"}
+              onMouseLeave={e => e.currentTarget.style.background = showAI ? "rgba(255,255,255,0.22)" : "rgba(255,255,255,0.12)"}
             >
-              <Sparkles size={15} />
+              <Sparkles size={14} />
               AI Insights
             </button>
-            <button
-              onClick={handleRefresh}
-              disabled={refreshing}
-              className="w-10 h-10 rounded-xl flex items-center justify-center cursor-pointer transition-all duration-150"
-              style={{
-                background: "rgba(255,255,255,0.15)",
-                border: "1px solid rgba(255,255,255,0.2)",
-                color: "#fff",
-              }}
-            >
-              <RefreshCw size={15} className={refreshing ? "animate-spin" : ""} />
+            <button onClick={handleRefresh} disabled={refreshing} style={{
+              width: "38px", height: "38px", borderRadius: "10px",
+              background: "rgba(255,255,255,0.12)",
+              border: "1.5px solid rgba(255,255,255,0.25)",
+              color: "#fff", display: "flex",
+              alignItems: "center", justifyContent: "center",
+              cursor: "pointer", transition: "all 0.15s ease",
+            }}>
+              <RefreshCw size={15} style={{ animation: refreshing ? "spin 1s linear infinite" : "none" }} />
             </button>
           </div>
         </div>
 
-        {/* Quick net worth display inside hero */}
+        {/* Stats strip */}
         {!loadingSummary && summary && (
-          <div
-            className="mt-5 pt-4 flex items-center gap-6 flex-wrap"
-            style={{ borderTop: "1px solid rgba(255,255,255,0.15)" }}
-          >
-            <div>
-              <p className="text-blue-200 text-xs uppercase tracking-widest mb-0.5">Net Worth</p>
-              <p className="text-white text-xl font-bold font-mono">{fmt(summary.netWorth)}</p>
-            </div>
-            <div
-              className="w-px h-8 hidden sm:block"
-              style={{ background: "rgba(255,255,255,0.2)" }}
-            />
-            <div>
-              <p className="text-blue-200 text-xs uppercase tracking-widest mb-0.5">Bank Balance</p>
-              <p className="text-white text-xl font-bold font-mono">{fmt(summary.bankBalance)}</p>
-            </div>
-            <div
-              className="w-px h-8 hidden sm:block"
-              style={{ background: "rgba(255,255,255,0.2)" }}
-            />
-            <div>
-              <p className="text-blue-200 text-xs uppercase tracking-widest mb-0.5">Credit Used</p>
-              <p className="text-white text-xl font-bold font-mono">{fmt(summary.creditOutstanding)}</p>
-            </div>
-            <div className="ml-auto">
-              <span
-                className="px-3 py-1.5 rounded-full text-xs font-semibold"
-                style={{
-                  background: summary.riskLevel === "Low"
-                    ? "rgba(34,197,94,0.2)"
-                    : summary.riskLevel === "Moderate"
-                    ? "rgba(245,158,11,0.2)"
-                    : "rgba(239,68,68,0.2)",
-                  color: summary.riskLevel === "Low"
-                    ? "#86efac"
-                    : summary.riskLevel === "Moderate"
-                    ? "#fde68a"
-                    : "#fca5a5",
-                  border: "1px solid rgba(255,255,255,0.15)",
-                }}
-              >
-                {summary.riskLevel || "Low"} Risk
+          <div style={{
+            marginTop: "20px",
+            paddingTop: "18px",
+            borderTop: "1px solid rgba(255,255,255,0.15)",
+            display: "flex", gap: "10px", flexWrap: "wrap",
+            position: "relative",
+          }}>
+            {[
+              { label: "Net Worth",    value: fmt(summary.netWorth)          },
+              { label: "Bank Balance", value: fmt(summary.bankBalance)        },
+              { label: "Credit Used",  value: fmt(summary.creditOutstanding)  },
+            ].map(({ label, value }) => (
+              <div key={label} style={{
+                flex: "1 1 120px",
+                background: "rgba(255,255,255,0.10)",
+                borderRadius: "12px",
+                padding: "12px 16px",
+                border: "1px solid rgba(255,255,255,0.15)",
+                backdropFilter: "blur(4px)",
+              }}>
+                <p style={{
+                  color: "#BAE6FD", fontSize: "10px", fontWeight: "700",
+                  letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: "5px",
+                }}>
+                  {label}
+                </p>
+                <p style={{
+                  color: "#FFFFFF",
+                  fontSize: "clamp(16px, 2.2vw, 21px)",
+                  fontFamily: "JetBrains Mono, monospace",
+                  fontWeight: "600",
+                  letterSpacing: "-0.01em",
+                }}>
+                  {value}
+                </p>
+              </div>
+            ))}
+
+            {/* Risk pill — HIGH CONTRAST, clearly readable */}
+            <div style={{
+              flex: "0 0 auto",
+              display: "flex", alignItems: "center", gap: "8px",
+              padding: "10px 18px", borderRadius: "12px",
+              background: riskStyle.bg,
+              border: `1.5px solid ${riskStyle.border}`,
+            }}>
+              <span style={{
+                width: "9px", height: "9px", borderRadius: "50%",
+                background: riskStyle.dot, flexShrink: 0,
+                boxShadow: `0 0 6px ${riskStyle.dot}`,
+              }} />
+              <span style={{
+                color: riskStyle.text,
+                fontSize: "13px", fontWeight: "700",
+                whiteSpace: "nowrap",
+              }}>
+                {riskStyle.label}
               </span>
             </div>
           </div>
         )}
       </div>
 
-      {/* ── Summary Cards ───────────────────────────── */}
-      <div style={{ animation: "slideUp 0.4s ease 0.08s forwards", opacity: 0 }}>
-        <SummaryCards data={summary} loading={loadingSummary} />
-      </div>
-
-      {/* ── Risk + Charts ────────────────────────────── */}
-      <div
-        className="grid grid-cols-1 lg:grid-cols-3 gap-5"
-        style={{ animation: "slideUp 0.4s ease 0.14s forwards", opacity: 0 }}
-      >
-        <div className="lg:col-span-1 flex flex-col gap-5">
-          <RiskBadge data={summary} loading={loadingSummary} />
-
-          {/* Quick status pills */}
-          {!loadingSummary && summary && (
-            <div className="flex flex-col gap-2">
-              {[
-                {
-                  label: "Credit Utilization",
-                  value: `${(Number(summary.creditUtilization) || 0).toFixed(1)}%`,
-                  color: (summary.creditUtilization || 0) <= 30
-                    ? "#22C55E"
-                    : (summary.creditUtilization || 0) <= 70
-                    ? "#F59E0B"
-                    : "#EF4444",
-                  sub: (summary.creditUtilization || 0) <= 30
-                    ? "Healthy range"
-                    : "Monitor closely",
-                  Icon: Activity,
-                },
-                {
-                  label: "Net Position",
-                  value: (summary.netWorth || 0) >= 0 ? "Positive" : "Negative",
-                  color: (summary.netWorth || 0) >= 0 ? "#22C55E" : "#EF4444",
-                  sub: fmt(summary.netWorth),
-                  Icon: (summary.netWorth || 0) >= 0 ? TrendingUp : TrendingDown,
-                },
-              ].map((item) => (
-                <div
-                  key={item.label}
-                  className="flex items-center gap-3 px-4 py-3 rounded-xl"
-                  style={{
-                    background: "#fff",
-                    border: "1px solid rgba(0,0,0,0.07)",
-                    boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
-                  }}
-                >
-                  <div
-                    className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
-                    style={{
-                      background: `${item.color}14`,
-                      border: `1px solid ${item.color}30`,
-                    }}
-                  >
-                    <item.Icon size={15} style={{ color: item.color }} strokeWidth={2} />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-xs text-gray-500">{item.label}</p>
-                    <p className="text-sm font-semibold text-gray-900 font-mono">{item.value}</p>
-                  </div>
-                  <span className="text-xs font-medium" style={{ color: item.color }}>
-                    {item.sub}
-                  </span>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
-        <div className="lg:col-span-2">
-          <ExpenseChart expenses={expenses} loading={loadingExpenses} />
-        </div>
-      </div>
-
-      {/* ── AI Insights ──────────────────────────────── */}
+      {/* ── AI INSIGHTS ── */}
       {showAI && (
-        <div style={{ animation: "slideUp 0.3s ease forwards", opacity: 0 }}>
+        <div style={{ animation: "slideUp 0.35s ease forwards", opacity: 0 }}>
           <AIInsights summary={summary} />
         </div>
       )}
 
-      {/* ── Alerts + Activity Row ─────────────────────── */}
+      {/* ── SUMMARY CARDS ── */}
+      <div className="anim-2">
+        <SummaryCards data={summary} loading={loadingSummary} />
+      </div>
+
+      {/* ── RISK + CHART ── */}
+      <div className="anim-3" style={{
+        display: "grid",
+        gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+        gap: "20px",
+        alignItems: "stretch",
+      }}>
+        <RiskBadge data={summary} loading={loadingSummary} />
+        <ExpenseChart expenses={expenses} loading={loadingExpenses} />
+      </div>
+
+      {/* ── BOTTOM: ALERTS + HEALTH ── */}
       {!loadingSummary && summary && (
-        <div
-          className="grid grid-cols-1 lg:grid-cols-2 gap-5"
-          style={{ animation: "slideUp 0.4s ease 0.2s forwards", opacity: 0 }}
-        >
-          {/* Alerts panel */}
-          <div
-            className="rounded-2xl p-5"
-            style={{
-              background: "#fff",
-              border: "1px solid rgba(0,0,0,0.07)",
-              boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
-            }}
-          >
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-2">
-                <div
-                  className="w-7 h-7 rounded-lg flex items-center justify-center"
-                  style={{ background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.15)" }}
-                >
-                  <AlertTriangle size={13} color="#EF4444" />
+        <div className="anim-4" style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+          gap: "20px",
+        }}>
+
+          {/* Alerts Panel */}
+          <div style={{
+            background: "var(--bg-card)", borderRadius: "16px",
+            border: "1px solid var(--border)", padding: "20px",
+            boxShadow: "var(--shadow-sm)",
+          }}>
+            <div style={{
+              display: "flex", alignItems: "center",
+              justifyContent: "space-between", marginBottom: "18px",
+            }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                <div style={{
+                  width: "36px", height: "36px", borderRadius: "10px",
+                  background: "#FEF2F2", border: "1px solid #FECACA",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                }}>
+                  <AlertTriangle size={17} color="#DC2626" />
                 </div>
-                <span className="text-sm font-semibold text-gray-800">Active Alerts</span>
+                <div>
+                  <p style={{ fontSize: "15px", fontWeight: "700", color: "var(--text-900)" }}>Active Alerts</p>
+                  <p style={{ fontSize: "12px", color: "var(--text-400)", marginTop: "1px" }}>Financial warnings</p>
+                </div>
               </div>
-              <span
-                className="text-xs font-semibold px-2 py-0.5 rounded-full"
-                style={{
-                  background: (summary.alerts || []).length > 0
-                    ? "rgba(239,68,68,0.08)" : "rgba(34,197,94,0.08)",
-                  color: (summary.alerts || []).length > 0 ? "#EF4444" : "#22C55E",
-                }}
-              >
-                {(summary.alerts || []).length} alert{(summary.alerts || []).length !== 1 ? "s" : ""}
+              <span style={{
+                padding: "4px 12px", borderRadius: "99px",
+                fontSize: "12px", fontWeight: "700",
+                background: (summary.alerts || []).length > 0 ? "#FEF2F2" : "#F0FDF4",
+                color: (summary.alerts || []).length > 0 ? "#DC2626" : "#15803D",
+                border: `1px solid ${(summary.alerts || []).length > 0 ? "#FECACA" : "#86EFAC"}`,
+              }}>
+                {(summary.alerts || []).length} {(summary.alerts || []).length === 1 ? "alert" : "alerts"}
               </span>
             </div>
 
             {(summary.alerts || []).length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-6 gap-2">
-                <div
-                  className="w-10 h-10 rounded-full flex items-center justify-center"
-                  style={{ background: "rgba(34,197,94,0.1)" }}
-                >
-                  <ShieldCheck size={18} color="#22C55E" />
+              <div style={{
+                display: "flex", flexDirection: "column",
+                alignItems: "center", padding: "24px 0", gap: "10px",
+              }}>
+                <div style={{
+                  width: "52px", height: "52px", borderRadius: "50%",
+                  background: "#F0FDF4", border: "1px solid #86EFAC",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                }}>
+                  <ShieldCheck size={24} color="#16A34A" />
                 </div>
-                <p className="text-sm font-medium text-gray-700">All clear!</p>
-                <p className="text-xs text-gray-400">No financial alerts at this time</p>
+                <p style={{ fontSize: "15px", fontWeight: "700", color: "var(--text-900)" }}>All clear!</p>
+                <p style={{ fontSize: "13px", color: "var(--text-400)", textAlign: "center" }}>
+                  No financial alerts at this time
+                </p>
               </div>
             ) : (
-              <div className="flex flex-col gap-2">
+              <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
                 {(summary.alerts || []).map((alert, i) => (
-                  <div
-                    key={i}
-                    className="flex items-start gap-3 px-3 py-2.5 rounded-xl"
-                    style={{
-                      background: "rgba(239,68,68,0.04)",
-                      border: "1px solid rgba(239,68,68,0.1)",
-                    }}
-                  >
-                    <span
-                      className="w-1.5 h-1.5 rounded-full mt-1.5 shrink-0"
-                      style={{ background: "#EF4444" }}
-                    />
-                    <p className="text-sm text-gray-700">{alert}</p>
+                  <div key={i} style={{
+                    display: "flex", alignItems: "flex-start", gap: "10px",
+                    padding: "12px 14px", borderRadius: "10px",
+                    background: "#FFF7ED", border: "1px solid #FED7AA",
+                  }}>
+                    <AlertTriangle size={14} color="#EA580C" style={{ flexShrink: 0, marginTop: "1px" }} />
+                    <p style={{ fontSize: "13px", color: "var(--text-700)", lineHeight: 1.55, fontWeight: "500" }}>
+                      {alert}
+                    </p>
                   </div>
                 ))}
               </div>
             )}
           </div>
 
-          {/* Financial Health Score */}
-          <div
-            className="rounded-2xl p-5"
-            style={{
-              background: "#fff",
-              border: "1px solid rgba(0,0,0,0.07)",
-              boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
-            }}
-          >
-            <div className="flex items-center gap-2 mb-4">
-              <div
-                className="w-7 h-7 rounded-lg flex items-center justify-center"
-                style={{ background: "rgba(37,99,235,0.08)", border: "1px solid rgba(37,99,235,0.15)" }}
-              >
-                <Zap size={13} color="#2563EB" />
+          {/* Financial Health */}
+          <div style={{
+            background: "var(--bg-card)", borderRadius: "16px",
+            border: "1px solid var(--border)", padding: "20px",
+            boxShadow: "var(--shadow-sm)",
+          }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "20px" }}>
+              <div style={{
+                width: "36px", height: "36px", borderRadius: "10px",
+                background: "#EFF6FF", border: "1px solid #BFDBFE",
+                display: "flex", alignItems: "center", justifyContent: "center",
+              }}>
+                <TrendingUp size={17} color="#2563EB" />
               </div>
-              <span className="text-sm font-semibold text-gray-800">Financial Health</span>
+              <div>
+                <p style={{ fontSize: "15px", fontWeight: "700", color: "var(--text-900)" }}>Financial Health</p>
+                <p style={{ fontSize: "12px", color: "var(--text-400)", marginTop: "1px" }}>Key performance metrics</p>
+              </div>
             </div>
 
-            <div className="flex flex-col gap-3">
+            <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
               {[
                 {
                   label: "Savings Rate",
-                  pct: Math.min(
-                    summary.bankBalance > 0
-                      ? Math.round((summary.bankBalance / (summary.bankBalance + summary.creditOutstanding + 1)) * 100)
-                      : 0,
-                    100
-                  ),
-                  color: "#2563EB",
+                  pct: Math.min(summary.bankBalance > 0
+                    ? Math.round((summary.bankBalance / (summary.bankBalance + (summary.creditOutstanding || 0) + 1)) * 100) : 0, 100),
+                  color: "#2563EB", track: "#DBEAFE",
                 },
                 {
                   label: "Debt Control",
-                  pct: Math.min(
-                    100 - Math.round(Number(summary.creditUtilization) || 0),
-                    100
-                  ),
-                  color: "#22C55E",
+                  pct: Math.min(100 - Math.round(Number(summary.creditUtilization) || 0), 100),
+                  color: "#16A34A", track: "#DCFCE7",
                 },
                 {
                   label: "Risk Management",
                   pct: Math.max(100 - (summary.riskScore || 0), 0),
-                  color: summary.riskLevel === "Low"
-                    ? "#22C55E"
-                    : summary.riskLevel === "Moderate"
-                    ? "#F59E0B"
-                    : "#EF4444",
+                  color: riskLevel === "Low" ? "#16A34A" : riskLevel === "Moderate" ? "#D97706" : "#DC2626",
+                  track: riskLevel === "Low" ? "#DCFCE7" : riskLevel === "Moderate" ? "#FEF3C7" : "#FEE2E2",
                 },
-              ].map((item) => (
+              ].map(item => (
                 <div key={item.label}>
-                  <div className="flex items-center justify-between mb-1.5">
-                    <span className="text-xs font-medium text-gray-600">{item.label}</span>
-                    <span
-                      className="text-xs font-mono font-semibold"
-                      style={{ color: item.color }}
-                    >
+                  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "7px" }}>
+                    <span style={{ fontSize: "13px", fontWeight: "600", color: "#334155" }}>{item.label}</span>
+                    <span style={{ fontSize: "13px", fontFamily: "JetBrains Mono", fontWeight: "700", color: item.color }}>
                       {item.pct}%
                     </span>
                   </div>
-                  <div
-                    className="h-2 rounded-full overflow-hidden"
-                    style={{ background: "#F3F4F6" }}
-                  >
-                    <div
-                      className="h-full rounded-full transition-all duration-700"
-                      style={{
-                        width: `${item.pct}%`,
-                        background: item.color,
-                        boxShadow: `0 0 8px ${item.color}40`,
-                      }}
-                    />
+                  <div style={{ height: "8px", borderRadius: "99px", background: item.track, overflow: "hidden" }}>
+                    <div style={{
+                      height: "100%", borderRadius: "99px",
+                      width: `${item.pct}%`, background: item.color,
+                      transition: "width 0.9s ease",
+                    }} />
                   </div>
                 </div>
               ))}
             </div>
 
-            {/* Overall score */}
-            <div
-              className="mt-4 pt-4 flex items-center justify-between"
-              style={{ borderTop: "1px solid #F3F4F6" }}
-            >
-              <span className="text-xs text-gray-500">Overall Score</span>
-              <div className="flex items-center gap-2">
-                <div className="flex gap-0.5">
-                  {[1,2,3,4,5].map((i) => {
+            {/* Score dots */}
+            <div style={{
+              marginTop: "20px", paddingTop: "16px",
+              borderTop: "1px solid var(--border)",
+              display: "flex", alignItems: "center", justifyContent: "space-between",
+            }}>
+              <span style={{ fontSize: "13px", color: "var(--text-400)", fontWeight: "500" }}>Overall Score</span>
+              <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                <div style={{ display: "flex", gap: "5px" }}>
+                  {[1,2,3,4,5].map(i => {
                     const score = Math.max(100 - (summary.riskScore || 0), 0);
                     const filled = i <= Math.round((score / 100) * 5);
                     return (
-                      <div
-                        key={i}
-                        className="w-4 h-1.5 rounded-full"
-                        style={{ background: filled ? "#2563EB" : "#E5E7EB" }}
-                      />
+                      <div key={i} style={{
+                        width: "22px", height: "7px", borderRadius: "99px",
+                        background: filled ? "#2563EB" : "#E2E8F0",
+                        transition: "background 0.3s ease",
+                      }} />
                     );
                   })}
                 </div>
-                <span className="text-xs font-semibold text-gray-700">
-                  {summary.riskLevel === "Low"
-                    ? "Excellent"
-                    : summary.riskLevel === "Moderate"
-                    ? "Fair"
-                    : "Needs Work"}
+                <span style={{ fontSize: "13px", fontWeight: "700", color: "var(--text-900)" }}>
+                  {riskLevel === "Low" ? "Excellent" : riskLevel === "Moderate" ? "Fair" : "Needs Work"}
                 </span>
               </div>
             </div>

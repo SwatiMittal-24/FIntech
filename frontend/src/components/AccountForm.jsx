@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Plus, X, Building2, DollarSign, CreditCard, Loader2 } from "lucide-react";
+import { Plus, X, Building2, IndianRupee, CreditCard, Loader2 } from "lucide-react";
 import api from "../api/axios";
 
 const ACCOUNT_TYPES = [
@@ -194,8 +194,8 @@ export default function AccountForm({ onSuccess, onCancel }) {
           <div>
             <label className="label">Current Balance *</label>
             <div className="relative">
-              <DollarSign
-                size={13}
+              <IndianRupee
+                size={14}
                 className="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none"
                 style={{ color: "var(--text-muted)" }}
               />
