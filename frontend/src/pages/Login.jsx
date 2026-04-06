@@ -19,7 +19,6 @@ export default function Login() {
     try {
       const { data } = await api.post("/api/auth/login", form);
 
-      // Handle different response structures from backend
       const token = data.token || data.accessToken || data.jwt;
       const userData = data.user || data.data || { email: form.email };
 
@@ -35,6 +34,19 @@ export default function Login() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleDemo = () => {
+    const demoUser = {
+      name: "Demo User",
+      email: "demo@example.com",
+      _id: "demo-id",
+      role: "admin",
+    };
+    const demoToken = "demo-mock-token-123";
+    
+    login(demoUser, demoToken);
+    navigate("/dashboard");
   };
 
   return (
@@ -160,23 +172,34 @@ export default function Login() {
             </div>
 
             {/* Submit */}
-            <button
-              type="submit"
-              disabled={loading}
-              className="btn-primary w-full mt-2 h-11 disabled:opacity-60 disabled:cursor-not-allowed"
-            >
-              {loading ? (
-                <>
-                  <span className="w-4 h-4 border-2 border-navy-950/40 border-t-navy-950 rounded-full animate-spin" />
-                  Signing in…
-                </>
-              ) : (
-                <>
-                  Sign in
-                  <ArrowRight size={15} />
-                </>
-              )}
-            </button>
+            <div className="flex flex-col gap-3 mt-2">
+              <button
+                type="submit"
+                disabled={loading}
+                className="btn-primary w-full h-11 disabled:opacity-60 disabled:cursor-not-allowed"
+              >
+                {loading ? (
+                  <>
+                    <span className="w-4 h-4 border-2 border-navy-950/40 border-t-navy-950 rounded-full animate-spin" />
+                    Signing in…
+                  </>
+                ) : (
+                  <>
+                    Sign in
+                    <ArrowRight size={15} />
+                  </>
+                )}
+              </button>
+
+              <button
+                type="button"
+                onClick={handleDemo}
+                className="btn-secondary w-full h-11"
+              >
+                <Zap size={15} className="text-cyan-500" />
+                Try Demo
+              </button>
+            </div>
           </form>
 
           {/* Footer */}
