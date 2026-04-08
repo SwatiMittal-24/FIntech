@@ -28,8 +28,16 @@ exports.registerUser = async (req, res, next) => {
       },
     });
 
+    // generate token
+    const token = jwt.sign(
+      { userId: user.id },
+      process.env.JWT_SECRET,
+      { expiresIn: "1d" }
+    );
+
     res.status(201).json({
       message: "User registered successfully",
+      token,
       user: {
         id: user.id,
         email: user.email,
@@ -37,6 +45,7 @@ exports.registerUser = async (req, res, next) => {
       },
     });
   } catch (error) {
+    console.error("REGISTER ERROR:", error);
     next(error);
   }
 };
