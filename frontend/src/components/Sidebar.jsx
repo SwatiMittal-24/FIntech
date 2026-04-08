@@ -5,6 +5,8 @@ import {
   ChevronLeft, ChevronRight, Zap,
 } from "lucide-react";
 import { useAuth } from "../context/authContext";
+import ConfirmationModal from "./ConfirmationModal";
+import { useState } from "react";
 
 const NAV = [
   { to: "/dashboard", icon: LayoutDashboard, label: "Dashboard"    },
@@ -17,6 +19,12 @@ const NAV = [
 export default function Sidebar({ collapsed, onToggle }) {
   const { logout, user } = useAuth();
   const navigate = useNavigate();
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  };
 
   return (
     <aside style={{
@@ -205,7 +213,7 @@ export default function Sidebar({ collapsed, onToggle }) {
           </div>
         )}
         <button
-          onClick={() => { logout(); navigate("/login"); }}
+          onClick={() => setShowLogoutModal(true)}
           title={collapsed ? "Logout" : undefined}
           style={{
             display: "flex", alignItems: "center", gap: "10px",
@@ -228,6 +236,16 @@ export default function Sidebar({ collapsed, onToggle }) {
           {!collapsed && <span style={{ whiteSpace: "nowrap" }}>Logout</span>}
         </button>
       </div>
+      
+      <ConfirmationModal 
+        isOpen={showLogoutModal}
+        onClose={() => setShowLogoutModal(false)}
+        onConfirm={handleLogout}
+        title="Confirm Logout"
+        message="Are you sure you want to log out of your account? Any unsaved changes may be lost."
+        confirmText="Logout"
+        type="danger"
+      />
     </aside>
   );
 }

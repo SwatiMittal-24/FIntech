@@ -26,6 +26,11 @@ export default function Dashboard() {
   const [showAI, setShowAI] = useState(false);
 
   const fetchSummary = async () => {
+    if (user?.email === "demo@example.com") {
+      setSummary({ netWorth: 150000, bankBalance: 120000, creditOutstanding: 30000, creditUtilization: 10, riskLevel: "Low", riskScore: 10, alerts: [] });
+      setLoadingSummary(false);
+      return;
+    }
     try {
       const { data } = await api.get("/api/finance/summary");
       setSummary(data?.data || data);
@@ -37,6 +42,14 @@ export default function Dashboard() {
   };
 
   const fetchExpenses = async () => {
+    if (user?.email === "demo@example.com") {
+      setExpenses([
+        { id: "mock1", title: "Groceries", amount: 1500, category: "Food", type: "expense", date: new Date().toISOString() },
+        { id: "mock2", title: "Salary", amount: 50000, category: "Other", type: "income", date: new Date().toISOString() }
+      ]);
+      setLoadingExpenses(false);
+      return;
+    }
     try {
       const { data } = await api.get("/api/expenses");
       const list = data?.data?.expenses || data?.data || data?.expenses || (Array.isArray(data) ? data : []);

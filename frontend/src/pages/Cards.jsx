@@ -6,6 +6,7 @@ import {
 } from "lucide-react";
 import api from "../api/axios";
 import CardForm from "../components/CardForm";
+import { useAuth } from "../context/authContext";
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -323,7 +324,18 @@ export default function Cards() {
   const [showForm, setShowForm] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
 
+  const { user } = useAuth();
+
   const fetchCards = async () => {
+    if (user?.email === "demo@example.com") {
+      setCards([
+        { id: "d-card-1", name: "Amex Platinum", cardType: "Amex", outstanding: 12000, limit: 500000, bankName: "American Express" },
+        { id: "d-card-2", name: "Visa Signature", cardType: "Visa", outstanding: 45000, limit: 200000, bankName: "HDFC Bank" },
+        { id: "d-card-3", name: "Mastercard Gold", cardType: "Mastercard", outstanding: 0, limit: 100000, bankName: "ICICI Bank" },
+      ]);
+      setLoading(false);
+      return;
+    }
     try {
       const { data } = await api.get("/api/cards");
       setCards(Array.isArray(data) ? data : data.cards || []);

@@ -4,7 +4,7 @@ const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
-  const [token, setToken] = useState(() => localStorage.getItem("token"));
+  const [token, setToken] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -12,30 +12,15 @@ export function AuthProvider({ children }) {
       const storedToken = localStorage.getItem("token");
       const storedUser  = localStorage.getItem("user");
 
+      // Only restore if it's a real session or if the user wants to stay logged in
       if (storedToken && storedUser && storedUser !== "undefined") {
         setToken(storedToken);
         setUser(JSON.parse(storedUser));
-      } else {
-        // Mock user details to bypass authentication
-        const demoUser = { name: "Demo User", email: "demo@example.com", _id: "demo-id", role: "admin" };
-        const demoToken = "demo-mock-token-123";
-        
-        localStorage.setItem("token", demoToken);
-        localStorage.setItem("user", JSON.stringify(demoUser));
-        
-        setToken(demoToken);
-        setUser(demoUser);
       }
     } catch (e) {
-      // If JSON.parse fails, set mock user as fallback
-      const demoUser = { name: "Demo User", email: "demo@example.com", _id: "demo-id", role: "admin" };
-      const demoToken = "demo-mock-token-123";
-      
-      localStorage.setItem("token", demoToken);
-      localStorage.setItem("user", JSON.stringify(demoUser));
-      
-      setToken(demoToken);
-      setUser(demoUser);
+      console.error("Failed to parse stored user", e);
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
     } finally {
       setLoading(false);
     }

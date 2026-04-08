@@ -5,6 +5,7 @@ import {
   TrendingUp, CheckCircle2, AlertTriangle, RefreshCw
 } from "lucide-react";
 import api from "../api/axios";
+import { useAuth } from "../context/authContext";
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -545,7 +546,27 @@ export default function Budget() {
   const [showForm, setShowForm] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
 
+  const { user } = useAuth();
+
   const fetchAll = async () => {
+    if (user?.email === "demo@example.com") {
+      setBudgets([
+        { id: "db-1", category: "Food & Dining", amount: 15000 },
+        { id: "db-2", category: "Transport", amount: 5000 },
+        { id: "db-3", category: "Shopping", amount: 20000 },
+        { id: "db-4", category: "Rent", amount: 25000 },
+        { id: "db-5", category: "Utilities", amount: 8000 },
+      ]);
+      setExpenses([
+        { id: "de-1", category: "Food & Dining", amount: 12450 },
+        { id: "de-2", category: "Transport", amount: 3200 },
+        { id: "de-3", category: "Shopping", amount: 22000 },
+        { id: "de-4", category: "Rent", amount: 25000 },
+        { id: "de-5", category: "Utilities", amount: 4500 },
+      ]);
+      setLoading(false);
+      return;
+    }
     try {
       const [budgetRes, expenseRes] = await Promise.all([
         api.get("/api/budget"),

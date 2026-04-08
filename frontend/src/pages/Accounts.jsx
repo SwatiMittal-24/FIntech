@@ -6,6 +6,7 @@ import {
 } from "lucide-react";
 import api from "../api/axios";
 import AccountForm from "../components/AccountForm";
+import { useAuth } from "../context/authContext";
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -223,7 +224,19 @@ export default function Accounts() {
   const [showForm, setShowForm] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
 
+  const { user } = useAuth();
+
   const fetchAccounts = async () => {
+    if (user?.email === "demo@example.com") {
+      setAccounts([
+        { id: "d-acc-1", name: "HDFC Primary", bankName: "HDFC Bank", type: "Checking", balance: 145000 },
+        { id: "d-acc-2", name: "ICICI Savings", bankName: "ICICI Bank", type: "Savings", balance: 850000 },
+        { id: "d-acc-3", name: "Zerodha Demat", bankName: "Zerodha", type: "Investment", balance: 1250000 },
+        { id: "d-acc-4", name: "Emergency Fund", bankName: "SBI", type: "Emergency Fund", balance: 50000 },
+      ]);
+      setLoading(false);
+      return;
+    }
     try {
       const { data } = await api.get("/api/accounts");
       setAccounts(Array.isArray(data) ? data : data.accounts || []);

@@ -17,13 +17,16 @@ export default function Register() {
     setError("");
     setLoading(true);
     try {
+      console.log("Registering with:", { name: form.name, email: form.email });
       const { data } = await api.post("/api/auth/register", form);
+      console.log("Server response:", data);
 
       // Handle different response structures from backend
       const token = data.token || data.accessToken || data.jwt;
       const userData = data.user || data.data || { email: form.email, name: form.name };
 
       if (!token) {
+        console.error("Token missing in response:", data);
         setError("Registration failed: No token received from server.");
         return;
       }
@@ -31,6 +34,11 @@ export default function Register() {
       login(userData, token);
       navigate("/dashboard");
     } catch (err) {
+      console.error("Registration Error:", {
+        message: err.message,
+        response: err.response?.data,
+        status: err.response?.status
+      });
       setError(err.response?.data?.message || "Registration failed. Please try again.");
     } finally {
       setLoading(false);

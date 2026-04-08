@@ -8,6 +8,7 @@ import api from "../api/axios";
 import ExpenseForm from "../components/ExpenseForm";
 import { useRole } from "../context/roleContext";
 import { useTheme } from "../context/themeContext";
+import { useAuth } from "../context/authContext";
 
 const CATEGORY_COLORS = {
   Food:          { bg: "#FEF3C7", text: "#92400E", border: "#FCD34D", dot: "#F59E0B" },
@@ -55,7 +56,23 @@ export default function Expenses() {
     }
   }, [role]);
 
+  const { user } = useAuth();
+
   const fetchExpenses = async () => {
+    if (user?.email === "demo@example.com") {
+      const demoData = [
+        { id: "d1", title: "Apple Store", amount: 85000, category: "Shopping", type: "expense", date: new Date().toISOString() },
+        { id: "d2", title: "Monthly Rent", amount: 22000, category: "Other", type: "expense", date: new Date().toISOString() },
+        { id: "d3", title: "Starbucks Coffee", amount: 450, category: "Food", type: "expense", date: new Date().toISOString() },
+        { id: "d4", title: "Uber Ride", amount: 850, category: "Transport", type: "expense", date: new Date().toISOString() },
+        { id: "d5", title: "Freelance Payment", amount: 45000, category: "Other", type: "income", date: new Date().toISOString() },
+        { id: "d6", title: "Netflix Subscription", amount: 649, category: "Entertainment", type: "expense", date: new Date().toISOString() },
+        { id: "d7", title: "Electric Bill", amount: 3200, category: "Utilities", type: "expense", date: new Date().toISOString() },
+      ];
+      setExpenses(demoData);
+      setLoading(false);
+      return;
+    }
     try {
       const { data } = await api.get("/api/expenses");
       const list = data?.data?.expenses || data?.data || data?.expenses || (Array.isArray(data) ? data : []);
