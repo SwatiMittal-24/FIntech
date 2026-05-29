@@ -4,12 +4,13 @@ const ThemeContext = createContext();
 
 export function ThemeProvider({ children }) {
   const [isDark, setIsDark] = useState(() => {
-    const stored = localStorage.getItem("theme");
-    return stored === "dark" ? true : false;
+    const stored = localStorage.getItem("fintech-theme");
+    // Default to false (light mode) if nothing is stored
+    return stored === "dark";
   });
 
   useEffect(() => {
-    localStorage.setItem("theme", isDark ? "dark" : "light");
+    localStorage.setItem("fintech-theme", isDark ? "dark" : "light");
   }, [isDark]);
 
   const toggleDarkMode = () => setIsDark(p => !p);
