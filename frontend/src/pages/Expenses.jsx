@@ -79,12 +79,7 @@ export default function Expenses() {
       setExpenses(list);
     } catch (e) {
       console.error(e);
-      const defaultMock = [
-        { id: "mock1", title: "Groceries", amount: 1500, category: "Food", type: "expense", date: new Date().toISOString() },
-        { id: "mock2", title: "Salary", amount: 50000, category: "Other", type: "income", date: new Date().toISOString() }
-      ];
-      const savedMock = JSON.parse(localStorage.getItem("mockExpenses") || "null");
-      setExpenses(savedMock ? [...savedMock, ...defaultMock] : defaultMock);
+      setExpenses([]);
     }
     finally { setLoading(false); }
   };

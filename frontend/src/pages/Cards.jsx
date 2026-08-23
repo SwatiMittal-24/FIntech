@@ -341,9 +341,7 @@ export default function Cards() {
       setCards(Array.isArray(data) ? data : data.cards || []);
     } catch (e) {
       console.error(e);
-      const defaultMock = [{ id: "mock-card-1", name: "Mock Visa", cardType: "Visa", outstanding: 5000, limit: 20000, bankName: "Mock Bank" }];
-      const savedMock = JSON.parse(localStorage.getItem("mockCards") || "null");
-      setCards(savedMock ? [...savedMock, ...defaultMock] : defaultMock);
+      setCards([]);
     } finally {
       setLoading(false);
     }

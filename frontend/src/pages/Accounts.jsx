@@ -242,7 +242,7 @@ export default function Accounts() {
       setAccounts(Array.isArray(data) ? data : data.accounts || []);
     } catch (e) {
       console.error(e);
-      setAccounts([{ id: "mock-account-1", name: "Mock Checking", bankName: "Mock Bank", type: "Checking", balance: 15000 }]);
+      setAccounts([]);
     } finally {
       setLoading(false);
     }

@@ -584,8 +584,8 @@ export default function Budget() {
       );
     } catch (e) {
       console.error(e);
-      setBudgets([{ id: "mock-budget-1", category: "Food", amount: 3000 }]);
-      setExpenses([{ id: "mock-expense-1", category: "Food", amount: 1500 }]);
+      setBudgets([]);
+      setExpenses([]);
     } finally {
       setLoading(false);
     }

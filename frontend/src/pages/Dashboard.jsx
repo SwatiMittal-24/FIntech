@@ -36,7 +36,7 @@ export default function Dashboard() {
       setSummary(data?.data || data);
     } catch (e) {
       console.error(e);
-      setSummary({ netWorth: 150000, bankBalance: 120000, creditOutstanding: 30000, creditUtilization: 10, riskLevel: "Low", riskScore: 10, alerts: [] });
+      setSummary({ netWorth: 0, bankBalance: 0, creditOutstanding: 0, creditUtilization: 0, riskLevel: "Low", riskScore: 0, alerts: [] });
     }
     finally { setLoadingSummary(false); }
   };
@@ -56,10 +56,7 @@ export default function Dashboard() {
       setExpenses(list);
     } catch (e) {
       console.error(e);
-      setExpenses([
-        { id: "mock1", title: "Groceries", amount: 1500, category: "Food", type: "expense", date: new Date().toISOString() },
-        { id: "mock2", title: "Salary", amount: 50000, category: "Other", type: "income", date: new Date().toISOString() }
-      ]);
+      setExpenses([]);
     }
     finally { setLoadingExpenses(false); }
   };

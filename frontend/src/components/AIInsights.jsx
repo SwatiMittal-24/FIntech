@@ -4,6 +4,7 @@ import {
   TrendingUp, AlertCircle, CheckCircle2, RefreshCw, ChevronDown, ChevronUp,
 } from "lucide-react";
 import api from "../api/axios";
+import { useAuth } from "../context/authContext";
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -181,6 +182,7 @@ function ErrorState({ message, onRetry }) {
 // ── Main Component ────────────────────────────────────────────────────────────
 
 export default function AIInsights({ summary }) {
+  const { user } = useAuth();
   const [state, setState] = useState("idle"); // idle | loading | done | error
   const [insights, setInsights] = useState(null);
   const [error, setError] = useState("");
@@ -188,6 +190,26 @@ export default function AIInsights({ summary }) {
   const analyze = async () => {
     setState("loading");
     setError("");
+
+    if (user?.email === "demo@example.com") {
+      setTimeout(() => {
+        setInsights({
+          summary: "Based on the mock data, your financial health is stable. Your net worth is ₹150,000, and credit utilization is excellent at 10%.",
+          whatThisMeans: "A 10% credit utilization indicates good debt management, representing a low risk profile.",
+          actionSteps: [
+            "Continue paying off outstanding credit balances.",
+            "Keep monitoring expenses to maintain the savings rate."
+          ],
+          quickWins: [
+            "Your credit utilization is well under the 30% recommended limit.",
+            "No active financial alerts or warnings."
+          ]
+        });
+        setState("done");
+      }, 600);
+      return;
+    }
+
     try {
       const { data } = await api.post("/api/ai/analyze", { summary });
       setInsights(data?.aiInsights || data?.data?.aiInsights || data?.data || data);

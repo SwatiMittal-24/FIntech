@@ -23,6 +23,7 @@ router.use("/auth", authRoutes);
 
 //Budget routes
 router.use("/budgets", budgetRoutes);
+router.use("/budget", budgetRoutes);
 
 // Expense routes
 router.use("/expenses", expenseRoutes);
